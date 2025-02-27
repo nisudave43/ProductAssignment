@@ -2,7 +2,7 @@
 import React from 'react';
 
 // Next
-import { useRouter } from 'next/router';
+
 // Constants
 
 //Store
@@ -33,7 +33,6 @@ import "@/styles/globals.css";
 
 
 export default function App({ Component, pageProps }: AppProps) {
-
 
   const commonProps = {
     ...pageProps,
