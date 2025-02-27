@@ -21,12 +21,14 @@ import getAllProducts from '@/apis/products/getAllProducts';
 //Action
 
 // Icon
+import Add from '@/assets/icons/add';
 
 // Layout
 
 // Other components
 import Breadcrumb from '@/component/BreadCrumb';
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
+import Title from '@/component/Title';
 
 // Type
 
@@ -68,6 +70,21 @@ const DashBoard = (props: any) => {
 	return (
 		<div>
 			<Breadcrumb data={breadCrumbData} />
+
+			<Title
+				title={'Products'}
+				documentTitle={'Products'}
+				description={'View Product List'}
+				actionButtons={[
+					{
+						label: 'Add Product',
+						onClick: () => console.log('Adding product'),
+						variant: 'primary',
+						icon: <Add />
+					},
+				]}
+			/>
+
 			<h1>Dashboard</h1>
 		</div>
 	);
