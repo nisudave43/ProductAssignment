@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 // Next
 
 // Constants
-
+import { DEFAULT_THEME } from '@/constants/configuration';
 //Store
 import store from '@/store/store';
 
@@ -25,13 +25,13 @@ import { Provider } from 'react-redux';
 
 // Other components
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from '@/contexts/ThemeProvider';
 
 // Type
 import type { AppProps } from "next/app";
 
 //Styles
-import "@/styles/globals.css";
-
+import '@/styles/globals.scss';
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -52,10 +52,12 @@ const {current: queryClient} = useRef(new QueryClient({
 }));
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-      <Component {...commonProps} />
-    </Provider>
-    </QueryClientProvider>
+    <ThemeProvider defaultTheme={DEFAULT_THEME}>
+        <QueryClientProvider client={queryClient}>
+            <Provider store={store}>
+                <Component {...commonProps} />
+            </Provider>
+        </QueryClientProvider>
+    </ThemeProvider>
   );
 }

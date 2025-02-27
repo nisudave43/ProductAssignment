@@ -1,0 +1,17 @@
+@use "sass:math";
+
+$base-font-size: 16px !default;
+
+/**
+    * Calculate Rem (em) font size from pixels
+    * @param  {pixel} $size
+    * @return {rem}
+    * @example @include font-size(14px)
+*/
+@mixin font-size($size) {
+    @if unitless($size) {
+        $size: $size * 1px;
+    }
+
+font-size: (math.div($size, $base-font-size)) * 1rem;
+}

@@ -1,0 +1,83 @@
+@import '@/styles/_variables';
+
+.filter-view-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+    gap: $spacing-xl;
+
+    .heading-wrap {
+        display: flex;
+        justify-content: space-between;
+        gap: $spacing-xs;
+        height: 44px;
+        padding: $spacing-3xl;
+
+        .heading {
+            color: var(--textPrimary);
+            font-size: $font-size-text-xl;
+            font-style: normal;
+            font-weight: $font-weight-semi-bold;
+            line-height: $line-height-text-xl
+        }
+
+        .description {
+            color: var(--textDisabled);
+            font-size: $font-size-text-sm;
+            font-style: normal;
+            font-weight: $font-weight-regular;
+            line-height: $line-height-text-sm;
+        }
+
+        svg {
+            height: 1.25rem;
+            width: 1.25rem;
+            color: var(--forGroundFgQuinary);
+            cursor: pointer;
+        }
+    }
+
+    .content-wrap {
+        flex: 1 1;
+        padding: $spacing-3xl;
+    }
+
+    .footer-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-top: $spacing-3xl;
+        border-top: 1px solid var(--borderSecondary);
+        height: 70px;
+        padding: $spacing-3xl;
+
+        .save-filter {
+            border: none;
+            background: transparent;
+            color: var(--textBrandSecondary);
+            font-size: $font-size-text-sm;
+            font-style: normal;
+            font-weight: $font-weight-semi-bold;
+            line-height: $line-height-text-sm;
+            text-transform: capitalize;
+        }
+
+        .btn-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: $spacing-lg;
+
+            button {
+                text-transform: capitalize;
+            }
+
+            .cancel-btn {
+                border: 1px solid var(--borderSecondary);
+                background: var(--backgroundBgPrimary);
+                color: var(--textSecondary);
+            }
+        }
+    }
+}

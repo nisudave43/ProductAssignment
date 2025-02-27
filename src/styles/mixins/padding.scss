@@ -1,0 +1,23 @@
+@mixin padding($amount, $unit: 'px', $position: 'all') {
+    $top: 0;
+    $right: 0;
+    $bottom: 0;
+    $left: 0;
+
+    @if $position == 't' {
+      $top: $amount;
+    } @else if $position == 'r' {
+      $right: $amount;
+    } @else if $position == 'b' {
+      $bottom: $amount;
+    } @else if $position == 'l' {
+      $left: $amount;
+    } @else {
+      $top: $amount;
+      $right: $amount;
+      $bottom: $amount;
+      $left: $amount;
+    }
+
+    padding: #{$top}#{$unit} #{$right}#{$unit} #{$bottom}#{$unit} #{$left}#{$unit};
+  }

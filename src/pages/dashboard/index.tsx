@@ -25,6 +25,7 @@ import getAllProducts from '@/apis/products/getAllProducts';
 // Layout
 
 // Other components
+import Breadcrumb from '@/component/BreadCrumb';
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 
 // Type
@@ -55,8 +56,18 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 const DashBoard = (props: any) => {
 	const {data} = useQuery(fetchProducts());
+
+
+    const breadCrumbData = [
+        {
+            'title': 'Products',
+            'link': '/Products',
+        }
+    ];
+
 	return (
 		<div>
+			<Breadcrumb data={breadCrumbData} />
 			<h1>Dashboard</h1>
 		</div>
 	);

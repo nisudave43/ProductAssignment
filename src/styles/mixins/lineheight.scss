@@ -1,0 +1,13 @@
+@use "sass:math";
+
+/**
+ * Line height
+ */
+ @mixin line-height($height: 12px) {
+
+    @if unitless($height) {
+        $height: $height * 1px; //fallback for old browsers
+    }
+    // line-height: $height;
+    line-height: ((math.div(1, $base-font-size)) * $height) + rem;
+}
