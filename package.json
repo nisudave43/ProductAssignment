@@ -12,6 +12,8 @@
     "start:dev:server": "env-cmd -f .env.development npm run start"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.66.9",
+    "axios": "^1.8.1",
     "env-cmd": "^10.1.0",
     "next": "15.2.0",
     "react": "^19.0.0",

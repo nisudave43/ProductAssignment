@@ -2,19 +2,21 @@
 import React from 'react';
 
 // Next
-import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
+import type { GetServerSideProps } from 'next'
 
 // Constants
 
 //Store
 
 // Helpers
+import withHydrationBoundary from '@/helpers/withHydrationBoundary';
 
 // Contexts
 
 //Redux
 
 // Apis
+import getAllProducts from '@/apis/products/getAllProducts';
 
 //Action
 
@@ -23,42 +25,41 @@ import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
 // Layout
 
 // Other components
+import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 
 // Type
 
 //Styles
 
-type Repo = {
-  name: string
-  stargazers_count: number
-}
+const fetchProducts = () => ({
+	queryKey : ['productList'],
+	queryFn : async () => {
+		const response = await getAllProducts();
+      	return response;
+	},
+	refetchInterval : false,
+});
 
-export const getServerSideProps: GetServerSideProps<{ repo: Repo }> = async () => {
-  try {
-    // Fetch data from external API
-    const res = await fetch('https://api.github.com/repos/vercel/next.js');
+export const getServerSideProps: GetServerSideProps = async () => {
+	const queryClient = new QueryClient();
+	await Promise.allSettled([
+		queryClient.prefetchQuery(fetchProducts()),
+	]);
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch: ${res.statusText}`);
-    }
-
-    const repo: Repo = await res.json();
-
-    // Pass data to the page via props
-    return { props: { repo } };
-  } catch (error) {
-    console.error('Error fetching repo data:', error);
-    return { props: { repo: { name: 'Unknown', stargazers_count: 0 } } };
-  }
+	return {
+		props:{
+			dehydratedQueryClient : dehydrate(queryClient),
+		},
+	};
 };
 
 const DashBoard = (props: any) => {
-  console.log('props',props)
-  return (
-    <div>
-      <h1>Dashboard</h1>
-    </div>
-  );
+	const {data} = useQuery(fetchProducts());
+	return (
+		<div>
+			<h1>Dashboard</h1>
+		</div>
+	);
 };
 
-export default DashBoard;
+export default withHydrationBoundary(DashBoard);

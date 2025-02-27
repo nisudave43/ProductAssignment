@@ -1,5 +1,5 @@
 // React
-import React from 'react';
+import React, { useRef } from 'react';
 
 // Next
 
@@ -24,6 +24,7 @@ import { Provider } from 'react-redux';
 // Layout
 
 // Other components
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Type
 import type { AppProps } from "next/app";
@@ -39,9 +40,22 @@ export default function App({ Component, pageProps }: AppProps) {
     ...store?.getState(),
 };
 
+const {current: queryClient} = useRef(new QueryClient({
+  // Initialize a new QueryClient instance with default options
+  defaultOptions: {
+      queries: {
+          // Set the stale time for queries to 60,000 milliseconds (1 minute)
+          // This means that queries will be considered fresh for 1 minute before refetching
+          staleTime: 60000,
+      },
+  },
+}));
+
   return (
-    <Provider store={store}>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
       <Component {...commonProps} />
     </Provider>
+    </QueryClientProvider>
   );
 }
