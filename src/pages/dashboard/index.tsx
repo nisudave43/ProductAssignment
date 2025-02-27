@@ -22,13 +22,14 @@ import getAllProducts from '@/apis/products/getAllProducts';
 
 // Icon
 import Add from '@/assets/icons/add';
-
+import ViewEye from '@/assets/icons/viewEye';
 // Layout
 
 // Other components
 import Breadcrumb from '@/component/BreadCrumb';
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import Title from '@/component/Title';
+import Datatable from '@/component/Datatable';
 
 // Type
 
@@ -57,8 +58,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
 };
 
 const DashBoard = (props: any) => {
-	const {data} = useQuery(fetchProducts());
-
+	const {data: productList} = useQuery(fetchProducts());
+	console.log('prodictList',productList)
 
     const breadCrumbData = [
         {
@@ -66,6 +67,55 @@ const DashBoard = (props: any) => {
             'link': '/Products',
         }
     ];
+
+	const columns = [
+		{
+			name: 'Name',
+			selector: row => row.title,
+			sortable: true,
+			sortField: 'title',
+		},
+		{
+			name: 'Brand',
+			selector: row => row.brand,
+			sortable: true,
+			sortField: 'brand',
+		},
+		{
+			name: 'Category',
+			selector: row => row.category,
+			sortable: true,
+			sortField: 'category',
+		},
+		{
+			name: 'Current Stock',
+			selector: row => row.stock,
+			sortable: true,
+			sortField: 'stock',
+		},
+		{
+			name: 'Actions',
+			selector: row => (
+				<button className="text-gray-500 cursor-pointer" onClick={() => console.log('View Product', row)}>
+					<ViewEye />
+				</button>
+			),
+		},
+	];
+
+	const getTableRows = (data) => {
+
+		if(data && data?.length === 0) {
+			return [];
+		}
+		return data?.map(item => ({
+			title: item?.title || '-',
+			brand: item?.brand || '-',
+			category: item?.category || '-',
+			stock: item?.stock || '-',
+			rest: item
+		}));
+	};
 
 	return (
 		<div>
@@ -85,7 +135,16 @@ const DashBoard = (props: any) => {
 				]}
 			/>
 
-			<h1>Dashboard</h1>
+			<Datatable 
+				columns={columns}
+				data={getTableRows(productList?.products)}
+				title={'Products'}
+				totalPages={30}
+				paginationTotalRows={30}
+				rowsPerPage={10}
+				currentPage={4}
+				onSearchChange={(value) => console.log(value)}
+			/>
 		</div>
 	);
 };
