@@ -1,7 +1,6 @@
 import getAxiosInstance from '@/apis/getAxiosInstance';
 
 const editProduct = async (productObj: any, id: string) => {
-    console.log('id',id)
     if (!id) {
         return Promise.reject({
             error: true,

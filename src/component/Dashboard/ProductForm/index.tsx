@@ -26,17 +26,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
       {
         title: "",
         brand: "",
-        model: "",
-        color: "",
         category: "",
-        discount: "",
+        price: "",
       }
   );
 
-
   const { showToast, ToastComponent } = useToast();
 
-  // const categories = props?.categories;
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateForm = () => {
@@ -44,11 +40,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
 
     if (!formData.title) newErrors.title = "Title is required";
     if (!formData.brand) newErrors.brand = "Brand is required";
-    if (!formData.model) newErrors.model = "Model is required";
-    if (!formData.color) newErrors.color = "Color is required";
     if (!formData.category) newErrors.category = "Category is required";
-    if (!formData.discount) newErrors.discount = "Discount is required";
-    else if (isNaN(Number(formData.discount))) newErrors.discount = "Discount must be a number";
+    if (!formData.price) newErrors.price = "price is required";
+    else if (isNaN(Number(formData.price))) newErrors.price = "price must be a number";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -57,9 +51,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
   const fields = [
     { name: "title", label: "Title", icon: <Search />},
     { name: "brand", label: "Brand", icon: <Search /> },
-    { name: "model", label: "Model", icon: <Search /> },
-    { name: "color", label: "Color", icon: <Search /> },
-    { name: "discount", label: "Discount", type: "number", icon: <Search /> },
+    { name: "price", label: "Price", type: "number", icon: <Search /> },
   ]
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -88,13 +80,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
     },
 
     onSuccess: (response) => {
-        showToast(response?.message, () => {
+        showToast("Product Added successfully", () => {
             onSuccess?.()
         });
     },
     onError: (error) => {
         console.error("response",error?.message);
-        showToast(error?.message);
+        showToast("Error while adding product");
     },
 });
 
@@ -105,13 +97,13 @@ const { mutate: onProductEdit } = useMutation({
       return editProduct(product, id);
     },
     onSuccess: (response) => {
-        showToast(response?.message, () => {
+        showToast("Product Updated successfully", () => {
           onSuccess?.()
         });
     },
     onError: (error) => {
         console.error("response",error?.message);
-        showToast(error?.message);
+        showToast("Error while updating product");
     },
 });
 
@@ -158,9 +150,9 @@ const { mutate: onProductEdit } = useMutation({
             ${errors.category ? "border-red-500 focus:ring-red-500 focus:border-red-500" : "border-gray-300 dark:border-gray-600"}`}
         >
           <option value="">Select Category</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
+          {categories?.map((cat) => (
+            <option key={cat} value={cat?.slug}>
+              {cat?.name}
             </option>
           ))}
         </select>

@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import type { GetServerSideProps } from 'next'
 
 // Constants
-
+import { DEFAULT_PAGE_SIZE, DEFAULT_FILTER_PAGE } from '@/constants/configuration';
 //Store
 
 // Helpers
@@ -33,7 +33,7 @@ import Delete from '@/assets/icons/delete';
 
 // Other components
 import Breadcrumb from '@/component/BreadCrumb';
-import { QueryClient, dehydrate, useQuery, useMutation } from '@tanstack/react-query';
+import { QueryClient, dehydrate, useQuery, useMutation, keepPreviousData } from '@tanstack/react-query';
 import Title from '@/component/Title';
 import Datatable from '@/component/Datatable';
 import Dialog from '@/component/Dialog';
@@ -43,13 +43,19 @@ import ProductForm from '@/component/Dashboard/ProductForm';
 
 //Styles
 
-const fetchProducts = () => ({
-	queryKey : ['productList'],
-	queryFn : async () => {
-		const response = await getAllProducts();
-      	return response;
-	},
-	refetchInterval : false,
+const fetchProducts = (filterObject: { page?: number; limit?: number }) => ({
+    queryKey: ['productList', filterObject],
+
+    queryFn: async () => {
+        // Makes an API call to get the paginated inventory list based on the filter and body
+        const response = await getAllProducts(filterObject?.page, filterObject?.limit);
+
+        // Returns the 'data' field from the response object
+        return response;
+    },
+	placeholderData: keepPreviousData,
+    // Disables automatic refetching of data at a set interval
+    refetchInterval: false,
 });
 
 const fetchProductsCategory = () => ({
@@ -58,26 +64,39 @@ const fetchProductsCategory = () => ({
 		const response = await getAllProductCategory();
       	return response;
 	},
+	placeholderData: keepPreviousData,
 	refetchInterval : false,
 });
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	const queryClient = new QueryClient();
+
+	const filterObject = {
+		page: DEFAULT_FILTER_PAGE,
+		limit: DEFAULT_PAGE_SIZE
+	}
 	await Promise.allSettled([
-		queryClient.prefetchQuery(fetchProducts()),
+		queryClient.prefetchQuery(fetchProducts(filterObject)),
 		queryClient.prefetchQuery(fetchProductsCategory()),
 	]);
 
 	return {
 		props:{
 			dehydratedQueryClient : dehydrate(queryClient),
+			filterObject
 		},
 	};
 };
 
 
 const DashBoard = (props: any) => {
-	const {data: productList, refetch: productListRefetch} = useQuery(fetchProducts());
+
+	const {
+		filterObject
+	} = props;
+
+	const [filter, setFilter] = useState(filterObject);
+	const {data: productList, refetch: productListRefetch} = useQuery(fetchProducts(filter));
 	const {data: productCategoryList, } = useQuery(fetchProductsCategory());
 
 	const [isDialogShow, setDialogShow] = useState(false);
@@ -175,16 +194,13 @@ const DashBoard = (props: any) => {
         },
 
         onSuccess: (response) => {
-			console.log('response',response)
 			setProductDialogShow(true);
 			setEditProduct({
-				id: response?.product?.id,
-				title: response?.product?.title,
-				brand: response?.product?.brand,
-				model: response?.product?.model,
-				color: response?.product?.color,
-				category: response?.product?.category,
-				discount: response?.product?.discount
+				id: response?.id,
+				title: response?.title,
+				brand: response?.brand,
+				category: response?.category,
+				price: response?.price
 			  });
         },
         onError: () => {
@@ -193,6 +209,18 @@ const DashBoard = (props: any) => {
         },
     });
 
+
+
+    const updateFilter = (fieldName:string, newValue: string) => {
+
+        // Create a copy of the current filters object
+        const updatedFilters = { ...filter };
+        // Update the specified field with the new value
+        updatedFilters[fieldName] = newValue;
+
+        // Update the state with the new filters object
+        setFilter(updatedFilters);
+    };
 	return (
 		<div>
 			<Breadcrumb data={breadCrumbData} />
@@ -213,7 +241,7 @@ const DashBoard = (props: any) => {
 			{
 				isProductDialogShow &&
 				<ProductForm 
-					categories={productCategoryList?.categories} 
+					categories={productCategoryList || []}
 					data={editProduct}
 					id={editProduct?.id}
 					onClose={() => {
@@ -231,11 +259,14 @@ const DashBoard = (props: any) => {
 				columns={columns}
 				data={getTableRows(productList?.products)}
 				title={'Products'}
-				totalPages={30}
-				paginationTotalRows={30}
-				rowsPerPage={10}
-				currentPage={4}
+				totalPages={Math.ceil((productList?.total || 0) / (filter?.limit || DEFAULT_PAGE_SIZE))}
+				paginationTotalRows={productList?.total}
+				rowsPerPage={filter?.limit}
+				currentPage={filter?.page}
 				onSearchChange={(value) => console.log(value)}
+				onPageChange={(page) => {
+					updateFilter('page', page);
+				}}
 			/>
 			{
 				isDialogShow &&
