@@ -248,32 +248,36 @@ const DashBoard = (props: any) => {
 
 	const tableRows = useMemo(() => {
 		if (!productList?.products) return [];
-	
+
 		const filteredProducts = productList.products.filter(product => 
 			!selectedRow.includes(product.id) // Exclude products whose IDs are in selectedRow
 		);
-	
+
 		return getTableRows(filteredProducts);
 	}, [productList?.products, selectedRow]);
 
-	console.log('tableRows',tableRows)
 	return (
 		<div>
-			<Breadcrumb data={breadCrumbData} />
+			<div className='pt-3 pb-3'>
+				<Breadcrumb data={breadCrumbData} />
+			</div>
 			{ToastComponent}
-			<Title
-				title={'Products'}
-				documentTitle={'Products'}
-				description={'View Product List'}
-				actionButtons={[
-					{
-						label: 'Add Product',
-						onClick: () => setProductDialogShow(true),
-						variant: 'primary',
-						icon: <Add />
-					},
-				]}
-			/>
+			<div className='pt-4 pb-4'>
+				<Title
+					title={'Products'}
+					documentTitle={'Products'}
+					description={'View Product List'}
+					actionButtons={[
+						{
+							label: 'Add Product',
+							onClick: () => setProductDialogShow(true),
+							variant: 'primary',
+							icon: <Add />
+						},
+					]}
+				/>
+			</div>
+
 			{
 				isProductDialogShow &&
 				<ProductForm 

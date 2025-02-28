@@ -26,6 +26,7 @@ import { Provider } from 'react-redux';
 // Other components
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from '@/contexts/ThemeProvider';
+import Layout from '@/component/Layout';
 
 // Type
 import type { AppProps } from "next/app";
@@ -55,7 +56,9 @@ const {current: queryClient} = useRef(new QueryClient({
     <ThemeProvider defaultTheme={DEFAULT_THEME}>
         <QueryClientProvider client={queryClient}>
             <Provider store={store}>
-                <Component {...commonProps} />
+                <Layout>
+                  <Component {...commonProps} />
+                </Layout>
             </Provider>
         </QueryClientProvider>
     </ThemeProvider>
