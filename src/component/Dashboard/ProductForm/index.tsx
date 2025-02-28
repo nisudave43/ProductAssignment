@@ -1,16 +1,23 @@
 import React, { useState } from "react";
 import TextInput from "@/component/TextInput";
 import Search from "@/assets/icons/search";
-// const categories = ["Appliances", "Electronics", "Furniture", "Clothing", "Sports"];
+
+
+import addProduct from '@/apis/products/addProduct';
+import editProduct from '@/apis/products/editProduct';
+import { useMutation } from '@tanstack/react-query';
+
+import useToast from '@/helpers/customHooks/useToast';
 
 type ProductFormProps = {
   categories: string[]; // Categories as an array of strings
   data: any;
   id: string;
   onClose: () => void;
+  onSuccess: () => void
 };
 
-const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id }) => {
+const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id, onSuccess }) => {
   const [formData, setFormData] = useState(
     id
       ?
@@ -25,6 +32,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
         discount: "",
       }
   );
+
+
+  const { showToast, ToastComponent } = useToast();
 
   // const categories = props?.categories;
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -59,15 +69,58 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted:", formData);
+
+        if(id) {
+          console.log('here',formData)
+          onProductEdit({
+            product: formData,
+            id: id
+          });
+        } else {
+          onProductAdd(formData);
+        }
     }
   };
+
+  const { mutate: onProductAdd, isPending } = useMutation({
+    mutationFn: async (product: any) => {
+        return await addProduct(product);
+    },
+
+    onSuccess: (response) => {
+        showToast(response?.message, () => {
+            onSuccess?.()
+        });
+    },
+    onError: (error) => {
+        console.error("response",error?.message);
+        showToast(error?.message);
+    },
+});
+
+const { mutate: onProductEdit } = useMutation({
+
+  mutationFn: async ({ product, id }: { product: any; id: string }) => {
+      delete product['id'];
+      return editProduct(product, id);
+    },
+    onSuccess: (response) => {
+        showToast(response?.message, () => {
+          onSuccess?.()
+        });
+    },
+    onError: (error) => {
+        console.error("response",error?.message);
+        showToast(error?.message);
+    },
+});
 
   return (
     <div
       id="product-modal"
       className="fixed top-0 z-1 left-0 w-full h-full flex items-center justify-center bg-transparent bg-opacity-50 backdrop-blur-sm"
     >
+      {ToastComponent}
        <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-6 shadow-md rounded-lg">
       <div className="flex justify-between">
       <h2 className="text-xl font-semibold mb-4">Product Form</h2>
@@ -116,7 +169,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
 
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none"
+        className="w-full cursor-pointer bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none"
       >
         Submit
       </button>

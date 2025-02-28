@@ -214,10 +214,14 @@ const DashBoard = (props: any) => {
 				isProductDialogShow &&
 				<ProductForm 
 					categories={productCategoryList?.categories} 
-					onClose={() => setProductDialogShow(false)}
 					data={editProduct}
 					id={editProduct?.id}
 					onClose={() => {
+						setProductDialogShow(false);
+						setEditProduct({});
+					}}
+					onSuccess={() => {
+						productListRefetch();
 						setProductDialogShow(false);
 						setEditProduct({});
 					}}
