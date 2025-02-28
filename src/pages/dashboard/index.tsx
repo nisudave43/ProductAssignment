@@ -1,5 +1,5 @@
 // React
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Next
 import type { GetServerSideProps } from 'next'
@@ -43,12 +43,12 @@ import ProductForm from '@/component/Dashboard/ProductForm';
 
 //Styles
 
-const fetchProducts = (filterObject: { page?: number; limit?: number }) => ({
+const fetchProducts = (filterObject: { page?: number; limit?: number, search?: string }) => ({
     queryKey: ['productList', filterObject],
 
     queryFn: async () => {
         // Makes an API call to get the paginated inventory list based on the filter and body
-        const response = await getAllProducts(filterObject?.page, filterObject?.limit);
+        const response = await getAllProducts(filterObject?.page, filterObject?.limit, filterObject?.search);
 
         // Returns the 'data' field from the response object
         return response;
@@ -73,7 +73,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 	const filterObject = {
 		page: DEFAULT_FILTER_PAGE,
-		limit: DEFAULT_PAGE_SIZE
+		limit: DEFAULT_PAGE_SIZE,
+		search: '',
 	}
 	await Promise.allSettled([
 		queryClient.prefetchQuery(fetchProducts(filterObject)),
@@ -98,6 +99,7 @@ const DashBoard = (props: any) => {
 	const [filter, setFilter] = useState(filterObject);
 	const {data: productList, refetch: productListRefetch} = useQuery(fetchProducts(filter));
 	const {data: productCategoryList, } = useQuery(fetchProductsCategory());
+
 
 	const [isDialogShow, setDialogShow] = useState(false);
 	const [selectedProductId, setProductId] = useState('');
@@ -209,9 +211,7 @@ const DashBoard = (props: any) => {
         },
     });
 
-
-
-    const updateFilter = (fieldName:string, newValue: string) => {
+    const updateFilter = (fieldName:string, newValue: any) => {
 
         // Create a copy of the current filters object
         const updatedFilters = { ...filter };
@@ -266,6 +266,10 @@ const DashBoard = (props: any) => {
 				onSearchChange={(value) => console.log(value)}
 				onPageChange={(page) => {
 					updateFilter('page', page);
+				}}
+				onSearchChange={(value) => {
+					updateFilter('page', DEFAULT_FILTER_PAGE);
+					updateFilter('search', value);
 				}}
 			/>
 			{
