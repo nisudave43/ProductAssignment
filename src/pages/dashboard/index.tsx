@@ -19,6 +19,8 @@ import useToast from '@/helpers/customHooks/useToast';
 // Apis
 import getAllProducts from '@/apis/products/getAllProducts';
 import deleteProduct from '@/apis/products/deleteProduct';
+import getAllProductCategory from '@/apis/products/getAllProductCategory';
+import getProductById from '@/apis/products/getProductById';
 
 //Action
 
@@ -35,7 +37,7 @@ import { QueryClient, dehydrate, useQuery, useMutation } from '@tanstack/react-q
 import Title from '@/component/Title';
 import Datatable from '@/component/Datatable';
 import Dialog from '@/component/Dialog';
-import Toast from '@/component/Toast';
+import ProductForm from '@/component/Dashboard/ProductForm';
 
 // Type
 
@@ -50,10 +52,20 @@ const fetchProducts = () => ({
 	refetchInterval : false,
 });
 
+const fetchProductsCategory = () => ({
+	queryKey : ['productCategory'],
+	queryFn : async () => {
+		const response = await getAllProductCategory();
+      	return response;
+	},
+	refetchInterval : false,
+});
+
 export const getServerSideProps: GetServerSideProps = async () => {
 	const queryClient = new QueryClient();
 	await Promise.allSettled([
 		queryClient.prefetchQuery(fetchProducts()),
+		queryClient.prefetchQuery(fetchProductsCategory()),
 	]);
 
 	return {
@@ -63,12 +75,15 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	};
 };
 
+
 const DashBoard = (props: any) => {
 	const {data: productList, refetch: productListRefetch} = useQuery(fetchProducts());
+	const {data: productCategoryList, } = useQuery(fetchProductsCategory());
 
 	const [isDialogShow, setDialogShow] = useState(false);
 	const [selectedProductId, setProductId] = useState('');
-
+	const [isProductDialogShow, setProductDialogShow] = useState(false);
+	const [editProduct, setEditProduct] = useState({});
 	const { showToast, ToastComponent } = useToast();
     const breadCrumbData = [
         {
@@ -108,6 +123,7 @@ const DashBoard = (props: any) => {
 				<div className="flex items-center gap-2">
 					<button className="text-gray-500 cursor-pointer" onClick={() => {
 						setProductId(row?.id);
+						onProductView(row?.id);
 					}}>
 						<ViewEye />
 					</button>
@@ -124,7 +140,6 @@ const DashBoard = (props: any) => {
 	];
 
 	const getTableRows = (data: Array<any>) => {
-		console.log('data',data)
 		if(data && data?.length === 0) {
 			return [];
 		}
@@ -146,12 +161,35 @@ const DashBoard = (props: any) => {
         onSuccess: (response) => {
 			productListRefetch();
 			setDialogShow(false);
-			console.log('response',response)
 			showToast("Product deleted successfully");
         },
         onError: () => {
 			setDialogShow(false);
 			showToast("Error deleting product");
+        },
+    });
+
+	const { mutate: onProductView } = useMutation({
+        mutationFn: async (productId: string) => {
+            return await getProductById(productId);
+        },
+
+        onSuccess: (response) => {
+			console.log('response',response)
+			setProductDialogShow(true);
+			setEditProduct({
+				id: response?.product?.id,
+				title: response?.product?.title,
+				brand: response?.product?.brand,
+				model: response?.product?.model,
+				color: response?.product?.color,
+				category: response?.product?.category,
+				discount: response?.product?.discount
+			  });
+        },
+        onError: () => {
+			// setDialogShow(false);
+			showToast("Error view product");
         },
     });
 
@@ -166,13 +204,25 @@ const DashBoard = (props: any) => {
 				actionButtons={[
 					{
 						label: 'Add Product',
-						onClick: () => console.log('Adding product'),
+						onClick: () => setProductDialogShow(true),
 						variant: 'primary',
 						icon: <Add />
 					},
 				]}
 			/>
-
+			{
+				isProductDialogShow &&
+				<ProductForm 
+					categories={productCategoryList?.categories} 
+					onClose={() => setProductDialogShow(false)}
+					data={editProduct}
+					id={editProduct?.id}
+					onClose={() => {
+						setProductDialogShow(false);
+						setEditProduct({});
+					}}
+				/>
+			}
 			<Datatable 
 				columns={columns}
 				data={getTableRows(productList?.products)}
