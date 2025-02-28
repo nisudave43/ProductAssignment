@@ -100,7 +100,6 @@ const DashBoard = (props: any) => {
 	const {data: productList, refetch: productListRefetch} = useQuery(fetchProducts(filter));
 	const {data: productCategoryList, } = useQuery(fetchProductsCategory());
 
-
 	const [isDialogShow, setDialogShow] = useState(false);
 	const [selectedProductId, setProductId] = useState('');
 	const [isProductDialogShow, setProductDialogShow] = useState(false);
@@ -125,6 +124,30 @@ const DashBoard = (props: any) => {
 			selector: (row: any) => row.brand,
 			sortable: true,
 			sortField: 'brand',
+		},
+		{
+			name: 'Availability Status',
+			selector: (row: any) => {
+				const statusColors: Record<string, string> = {
+					'low stock': 'bg-yellow-100 text-yellow-600',
+					'out of stock': 'bg-red-100 text-red-600',
+					'in stock': 'bg-green-100 text-green-600',
+				};
+
+				const status = row.availabilityStatus?.toLowerCase() || 'unknown';
+
+				return (
+					<span
+						className={`px-2 py-1 rounded-full text-xs font-semibold ${
+							statusColors[status] || 'bg-gray-100 text-gray-600'
+						}`}
+					>
+						{row.availabilityStatus}
+					</span>
+				);
+			},
+			sortable: true,
+			sortField: 'availabilityStatus',
 		},
 		{
 			name: 'Category',
@@ -168,6 +191,7 @@ const DashBoard = (props: any) => {
 			id: item?.id,
 			title: item?.title || '-',
 			brand: item?.brand || '-',
+			availabilityStatus: item?.availabilityStatus || '-',
 			category: item?.category || '-',
 			price: item?.price || '-',
 			rest: item
