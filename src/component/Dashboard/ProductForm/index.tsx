@@ -63,7 +63,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
     if (validateForm()) {
 
         if(id) {
-          console.log('here',formData)
           onProductEdit({
             product: formData,
             id: id

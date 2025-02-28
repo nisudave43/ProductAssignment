@@ -1,6 +1,6 @@
 import getAxiosInstance from '@/apis/getAxiosInstance';
 
-const getAllProducts = async (productId: string) => {
+const deleteProduct = async (productId: string) => {
 
     if (!productId) {
         return Promise.reject({
@@ -13,4 +13,4 @@ const getAllProducts = async (productId: string) => {
     return instance.delete(`/products/${productId}`);
 };
 
-export default getAllProducts;
+export default deleteProduct;

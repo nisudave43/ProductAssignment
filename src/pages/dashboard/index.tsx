@@ -17,10 +17,11 @@ import useToast from '@/helpers/customHooks/useToast';
 //Redux
 
 // Apis
-import getAllProducts from '@/apis/products/getAllProducts';
+import getProductList from '@/apis/products/getProductList';
 import deleteProduct from '@/apis/products/deleteProduct';
 import getAllProductCategory from '@/apis/products/getAllProductCategory';
 import getProductById from '@/apis/products/getProductById';
+import getAllProductList from '@/apis/products/getAllProductList';
 
 //Action
 
@@ -38,6 +39,8 @@ import Title from '@/component/Title';
 import Datatable from '@/component/Datatable';
 import Dialog from '@/component/Dialog';
 import ProductForm from '@/component/Dashboard/ProductForm';
+import PieChart from '@/component/PieChart';
+import { Accordion, AccordionItem } from '@/component/Accordion';
 
 // Type
 
@@ -48,7 +51,7 @@ const fetchProducts = (filterObject: { page?: number; limit?: number, search?: s
 
     queryFn: async () => {
         // Makes an API call to get the paginated inventory list based on the filter and body
-        const response = await getAllProducts(filterObject?.page, filterObject?.limit, filterObject?.search);
+        const response = await getProductList(filterObject?.page, filterObject?.limit, filterObject?.search);
 
         // Returns the 'data' field from the response object
         return response;
@@ -68,6 +71,16 @@ const fetchProductsCategory = () => ({
 	refetchInterval : false,
 });
 
+const fetchAllProducts = () => ({
+	queryKey : ['products'],
+	queryFn : async () => {
+		const response = await getAllProductList();
+      	return response;
+	},
+	placeholderData: keepPreviousData,
+	refetchInterval : false,
+});
+
 export const getServerSideProps: GetServerSideProps = async () => {
 	const queryClient = new QueryClient();
 
@@ -79,6 +92,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	await Promise.allSettled([
 		queryClient.prefetchQuery(fetchProducts(filterObject)),
 		queryClient.prefetchQuery(fetchProductsCategory()),
+		queryClient.prefetchQuery(fetchAllProducts()),
 	]);
 
 	return {
@@ -99,6 +113,7 @@ const DashBoard = (props: any) => {
 	const [filter, setFilter] = useState(filterObject);
 	const {data: productList, refetch: productListRefetch} = useQuery(fetchProducts(filter));
 	const {data: productCategoryList, } = useQuery(fetchProductsCategory());
+	const {data: allProductList, } = useQuery(fetchAllProducts());
 	const [selectedRow, setSelectedRows] = useState([]);
 	const [isDialogShow, setDialogShow] = useState(false);
 	const [selectedProductId, setProductId] = useState('');
@@ -256,6 +271,14 @@ const DashBoard = (props: any) => {
 		return getTableRows(filteredProducts);
 	}, [productList?.products, selectedRow]);
 
+
+	const categoryCount = useMemo(() => {
+		return allProductList?.products?.reduce((acc, product) => {
+		  acc[product.category] = (acc[product.category] || 0) + 1;
+		  return acc;
+		}, {});
+	  }, [allProductList]);
+
 	return (
 		<div>
 			<div className='pt-3 pb-3'>
@@ -276,6 +299,16 @@ const DashBoard = (props: any) => {
 						},
 					]}
 				/>
+			</div>
+
+			<div className='mb-6'>
+				<Accordion>
+					<AccordionItem id="accordion-item-1" title="Category-based Product Breakdown Chart">
+						<div className='h-150 flex align-items-center justify-center'>
+							<PieChart data={categoryCount}/>
+						</div>
+					</AccordionItem>
+				</Accordion>
 			</div>
 
 			{
@@ -312,11 +345,9 @@ const DashBoard = (props: any) => {
 					updateFilter('search', value);
 				}}
 				onRowSelect={(rows) => {
-					console.log('selected',rows);
 				}}
 				onMultipleRowDelete={(rows) => {
 					setSelectedRows(rows);
-					console.log('rows',rows)
 				}}
 			/>
 			{

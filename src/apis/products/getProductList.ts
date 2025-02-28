@@ -1,7 +1,6 @@
 import getAxiosInstance from '@/apis/getAxiosInstance';
 
-const getAllProducts = async (page: number = 1, limit: number = 10, search: string) => {
-    console.log('search',search)
+const getProductList = async (page: number = 1, limit: number = 10, search: string) => {
     const skip = (page) * limit; // Calculate the correct 'skip' value
 
     const params = {};
@@ -14,4 +13,4 @@ const getAllProducts = async (page: number = 1, limit: number = 10, search: stri
     return instance.get('/products/search', { params });
 };
 
-export default getAllProducts;
+export default getProductList;
