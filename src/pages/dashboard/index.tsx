@@ -1,5 +1,5 @@
 // React
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 // Next
 import type { GetServerSideProps } from 'next'
@@ -99,7 +99,7 @@ const DashBoard = (props: any) => {
 	const [filter, setFilter] = useState(filterObject);
 	const {data: productList, refetch: productListRefetch} = useQuery(fetchProducts(filter));
 	const {data: productCategoryList, } = useQuery(fetchProductsCategory());
-
+	const [selectedRow, setSelectedRows] = useState([]);
 	const [isDialogShow, setDialogShow] = useState(false);
 	const [selectedProductId, setProductId] = useState('');
 	const [isProductDialogShow, setProductDialogShow] = useState(false);
@@ -245,6 +245,18 @@ const DashBoard = (props: any) => {
         // Update the state with the new filters object
         setFilter(updatedFilters);
     };
+
+	const tableRows = useMemo(() => {
+		if (!productList?.products) return [];
+	
+		const filteredProducts = productList.products.filter(product => 
+			!selectedRow.includes(product.id) // Exclude products whose IDs are in selectedRow
+		);
+	
+		return getTableRows(filteredProducts);
+	}, [productList?.products, selectedRow]);
+
+	console.log('tableRows',tableRows)
 	return (
 		<div>
 			<Breadcrumb data={breadCrumbData} />
@@ -281,7 +293,7 @@ const DashBoard = (props: any) => {
 			}
 			<Datatable 
 				columns={columns}
-				data={getTableRows(productList?.products)}
+				data={tableRows}
 				title={'Products'}
 				totalPages={Math.ceil((productList?.total || 0) / (filter?.limit || DEFAULT_PAGE_SIZE))}
 				paginationTotalRows={productList?.total}
@@ -294,6 +306,13 @@ const DashBoard = (props: any) => {
 				onSearchChange={(value) => {
 					updateFilter('page', DEFAULT_FILTER_PAGE);
 					updateFilter('search', value);
+				}}
+				onRowSelect={(rows) => {
+					console.log('selected',rows);
+				}}
+				onMultipleRowDelete={(rows) => {
+					setSelectedRows(rows);
+					console.log('rows',rows)
 				}}
 			/>
 			{
