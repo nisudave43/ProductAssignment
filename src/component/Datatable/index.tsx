@@ -10,6 +10,8 @@ import React from 'react';
 // Icons
 import Search from '@/assets/icons/search';
 
+// Helpers
+import truncateString from '@/helpers/truncateString';
 // Styles
 
 // Types
@@ -103,11 +105,15 @@ const Datatable: React.FC<DatatableProps> = ({
                                 key={rowIndex}
                                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"
                             >
-                                {columns?.map((col, colIndex) => (
-                                    <td key={colIndex} className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {typeof col.selector === 'function' ? col.selector(row) : row[col.selector]}
-                                    </td>
-                                ))}
+                               {columns?.map((col, colIndex) => {
+                                    const cellValue = typeof col.selector === 'function' ? col.selector(row) : row[col.selector];
+                                    const displayValue = cellValue.length > 50 ? truncateString(cellValue, 50) : cellValue;
+                                    return (
+                                        <td key={colIndex} className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white" title={cellValue.length > 100 ? cellValue : ''}>
+                                            {displayValue}
+                                        </td>
+                                    );
+                                })}
                             </tr>
                         ))
                     ) : (

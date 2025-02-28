@@ -1,5 +1,5 @@
 // React
-import React from 'react';
+import React, { useState } from 'react';
 
 // Next
 import type { GetServerSideProps } from 'next'
@@ -10,6 +10,7 @@ import type { GetServerSideProps } from 'next'
 
 // Helpers
 import withHydrationBoundary from '@/helpers/withHydrationBoundary';
+import useToast from '@/helpers/customHooks/useToast';
 
 // Contexts
 
@@ -17,19 +18,24 @@ import withHydrationBoundary from '@/helpers/withHydrationBoundary';
 
 // Apis
 import getAllProducts from '@/apis/products/getAllProducts';
+import deleteProduct from '@/apis/products/deleteProduct';
 
 //Action
 
 // Icon
 import Add from '@/assets/icons/add';
 import ViewEye from '@/assets/icons/viewEye';
+import Delete from '@/assets/icons/delete';
+
 // Layout
 
 // Other components
 import Breadcrumb from '@/component/BreadCrumb';
-import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
+import { QueryClient, dehydrate, useQuery, useMutation } from '@tanstack/react-query';
 import Title from '@/component/Title';
 import Datatable from '@/component/Datatable';
+import Dialog from '@/component/Dialog';
+import Toast from '@/component/Toast';
 
 // Type
 
@@ -58,9 +64,12 @@ export const getServerSideProps: GetServerSideProps = async () => {
 };
 
 const DashBoard = (props: any) => {
-	const {data: productList} = useQuery(fetchProducts());
-	console.log('prodictList',productList)
+	const {data: productList, refetch: productListRefetch} = useQuery(fetchProducts());
 
+	const [isDialogShow, setDialogShow] = useState(false);
+	const [selectedProductId, setProductId] = useState('');
+
+	const { showToast, ToastComponent } = useToast();
     const breadCrumbData = [
         {
             'title': 'Products',
@@ -71,56 +80,85 @@ const DashBoard = (props: any) => {
 	const columns = [
 		{
 			name: 'Name',
-			selector: row => row.title,
+			selector: (row: any) => row.title,
 			sortable: true,
 			sortField: 'title',
 		},
 		{
 			name: 'Brand',
-			selector: row => row.brand,
+			selector: (row: any) => row.brand,
 			sortable: true,
 			sortField: 'brand',
 		},
 		{
 			name: 'Category',
-			selector: row => row.category,
+			selector: (row: any) => row.category,
 			sortable: true,
 			sortField: 'category',
 		},
 		{
-			name: 'Current Stock',
-			selector: row => row.stock,
+			name: 'Price',
+			selector: (row: any) => row.price,
 			sortable: true,
-			sortField: 'stock',
+			sortField: 'price',
 		},
 		{
 			name: 'Actions',
-			selector: row => (
-				<button className="text-gray-500 cursor-pointer" onClick={() => console.log('View Product', row)}>
-					<ViewEye />
-				</button>
+			selector: (row: any) => (
+				<div className="flex items-center gap-2">
+					<button className="text-gray-500 cursor-pointer" onClick={() => {
+						setProductId(row?.id);
+					}}>
+						<ViewEye />
+					</button>
+					<button className="text-red-500 cursor-pointer" onClick={() => {
+						setDialogShow(true);
+						setProductId(row?.id);
+					}}>
+						<Delete />
+					</button>
+				</div>
+
 			),
 		},
 	];
 
-	const getTableRows = (data) => {
-
+	const getTableRows = (data: Array<any>) => {
+		console.log('data',data)
 		if(data && data?.length === 0) {
 			return [];
 		}
 		return data?.map(item => ({
+			id: item?.id,
 			title: item?.title || '-',
 			brand: item?.brand || '-',
 			category: item?.category || '-',
-			stock: item?.stock || '-',
+			price: item?.price || '-',
 			rest: item
 		}));
 	};
 
+    const { mutate: onProductDelete, isPending } = useMutation({
+        mutationFn: async (productId: string) => {
+            return await deleteProduct(productId);
+        },
+
+        onSuccess: (response) => {
+			productListRefetch();
+			setDialogShow(false);
+			console.log('response',response)
+			showToast("Product deleted successfully");
+        },
+        onError: () => {
+			setDialogShow(false);
+			showToast("Error deleting product");
+        },
+    });
+
 	return (
 		<div>
 			<Breadcrumb data={breadCrumbData} />
-
+			{ToastComponent}
 			<Title
 				title={'Products'}
 				documentTitle={'Products'}
@@ -145,6 +183,20 @@ const DashBoard = (props: any) => {
 				currentPage={4}
 				onSearchChange={(value) => console.log(value)}
 			/>
+			{
+				isDialogShow &&
+				<Dialog
+					onClose={() => {
+						setProductId('');
+						setDialogShow(false);
+					}}
+					onConfirm={() => {
+						onProductDelete(selectedProductId);
+					}}
+					title="Delete Product"
+					message="Are you sure you want to delete this product?"
+				/>
+			}
 		</div>
 	);
 };
