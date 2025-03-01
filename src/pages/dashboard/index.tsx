@@ -11,6 +11,7 @@ import { DEFAULT_PAGE_SIZE, DEFAULT_FILTER_PAGE } from '@/constants/configuratio
 // Helpers
 import withHydrationBoundary from '@/helpers/withHydrationBoundary';
 import useToast from '@/helpers/customHooks/useToast';
+import areArraysEqual from '@/helpers/areArraysEqual';
 
 // Contexts
 
@@ -121,11 +122,13 @@ const DashBoard = (props: any) => {
     const {data: allProductList } = useQuery(fetchAllProducts());
     const [selectedRow, setSelectedRows] = useState([]);
     const [isDialogShow, setDialogShow] = useState(false);
+    const [isMultipleDeleteDialogShow, setMultipleDeleteDialogShow] = useState(false);
     const [selectedProductId, setProductId] = useState('');
     const [isProductDialogShow, setProductDialogShow] = useState(false);
     const [editProduct, setEditProduct] = useState({});
-    const { showToast, ToastComponent } = useToast();
     const [quickFilterValue, setQuickFilterValue] = useState('all');
+    const [tempSelectedRow, setTempSelectedRow] = useState([]);
+
     const breadCrumbData = [
         {
             'title': 'Products',
@@ -134,6 +137,8 @@ const DashBoard = (props: any) => {
     ];
 
     const [products, setProducts] = useState(allProductList);
+
+    const { showToast, ToastComponent } = useToast();
 
     const quickFilters = [
         { label: 'All', value: 'all' },
@@ -282,11 +287,6 @@ const DashBoard = (props: any) => {
         setFilter(updatedFilters);
     };
 
-    // Function to filter out selected rows
-    const excludeSelectedProducts = (products: any[], selectedRow: any[]) => {
-        return products.filter((product) => !selectedRow.includes(product.id));
-    };
-
     // Function to filter products based on quickFilterValue
     const applyQuickFilter = (products: any[], quickFilterValue: string) => {
         if (!quickFilterValue || quickFilterValue === 'all') return products;
@@ -314,15 +314,7 @@ const DashBoard = (props: any) => {
         return products.slice(startIndex, startIndex + limit);
     };
 
-    const filterProductsByCategory = (products: any, category: any) => {
-        if (category.length > 0) {
-            return products.filter((product:any) => category.indexOf(product.category) !== -1);
-        }
-        return products; // Return all products if no category filter is applied
-	  };
-
-
-	  const sortProducts = (data: any, sortField: string, sort: string) => {
+	const sortProducts = (data: any, sortField: string, sort: string) => {
         return data?.sort((a:any, b: any) => {
             if (a[sortField] < b[sortField]) return sort === 'asc' ? -1 : 1;
             if (a[sortField] > b[sortField]) return sort === 'asc' ? 1 : -1;
@@ -330,36 +322,29 @@ const DashBoard = (props: any) => {
         });
     };
 
-	  const { tableRows, totalRows } = useMemo(() => {
-        // Ensure products exist
+    const { tableRows, totalRows } = useMemo(() => {
         if (!products?.products?.length) return { tableRows: [], totalRows: 0 };
 
-        // Extract filter values safely
         const { search, page = 1, limit = 10, category, sort } = filter || {};
+        const sortedProducts = sortProducts(products.products, sort?.sortField, sort?.sort);
 
-		 // Sort function
-		 const sortedProducts = sortProducts(products.products, sort?.sortField, sort?.sort);
-
-        // Apply all filtering functions in a single pass
-        const filteredProducts = sortedProducts
-            .filter((product: any) => !selectedRow.includes(product)) // Exclude selected products
-            .filter((product: any) => applyQuickFilter([product], quickFilterValue).length) // Quick filter
-            .filter((product: any) => applySearchFilter([product], search).length) // Search filter
-            .filter((product: any) => !Array.isArray(category) || category.length === 0 || category.includes(product.category)); // Category filter
-
-        // Apply pagination
-        const paginatedProducts = paginateProducts(filteredProducts, page, limit);
+        const filteredProducts = sortedProducts.filter((product: any) => 
+            !selectedRow.includes(product?.id) &&
+            applyQuickFilter([product], quickFilterValue).length &&
+            applySearchFilter([product], search).length &&
+            (!category?.length || category.includes(product.category))
+        );
 
         return {
-            tableRows: getTableRows(paginatedProducts),
+            tableRows: getTableRows(paginateProducts(filteredProducts, page, limit)),
             totalRows: filteredProducts.length,
         };
-    }, [filter?.search, filter?.sort, filter?.page, filter?.limit, filter?.category?.length, products?.products, selectedRow, quickFilterValue]);
+    }, [filter, products?.products, selectedRow, quickFilterValue]);
 
 
     const categoryCount = useMemo(() => {
         if (!products?.products) return {}; // Ensure safety
-    
+
         return products.products.reduce<Record<string, number>>((acc, product) => {
             acc[product.category] = (acc[product.category] || 0) + 1;
             return acc;
@@ -515,7 +500,8 @@ const DashBoard = (props: any) => {
                     updateFilter('search', value);
                 }}
                 onMultipleRowDelete={(rows) => {
-                    setSelectedRows(rows);
+                    setTempSelectedRow(rows);
+                    if(rows?.length > 0 && !areArraysEqual(tempSelectedRow, rows)) setMultipleDeleteDialogShow(true);
                 }}
                 quickFilters={quickFilters || []}
                 onQuickFilterChange={(value) => {
@@ -546,6 +532,21 @@ const DashBoard = (props: any) => {
 				    }}
 				    title="Delete Product"
 				    message="Are you sure you want to delete this product?"
+				/>
+            }
+
+            {
+                isMultipleDeleteDialogShow &&
+				<Dialog
+				    onClose={() => {
+				        setMultipleDeleteDialogShow(false);
+				    }}
+				    onConfirm={() => {
+				        setSelectedRows(tempSelectedRow);
+                        setMultipleDeleteDialogShow(false);
+				    }}
+				    title="Delete Product"
+				    message="Are you sure you want to delete these products?"
 				/>
             }
         </div>
