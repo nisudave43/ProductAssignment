@@ -20,6 +20,7 @@ import truncateString from '@/helpers/truncateString';
 // Other components
 import TextInput from '@/component/TextInput';
 import { useDebouncedCallback } from 'use-debounce';
+import ToggleGroup from '@/component/ToggleGroup';
 
 // Map state
 
@@ -43,7 +44,10 @@ interface DatatableProps {
     onSearchChange: (value: string) => void;
     onRowSelect: (selectedRows: string[]) => void,
     selectedRow: string[],
-    onMultipleDelete: (selectedRows: string[]) => void
+    onMultipleDelete: (selectedRows: string[]) => void,
+    quickFilters: { label: string; value: string }[];
+    onQuickFilterChange: (value: string) => void,
+    selectedQuickFilter: string,
 }
 
 const Datatable: React.FC<DatatableProps> = ({
@@ -59,7 +63,10 @@ const Datatable: React.FC<DatatableProps> = ({
     rowsPerPage,
     onRowSelect,
     selectedRow,
-    onMultipleRowDelete
+    onMultipleRowDelete,
+    quickFilters,
+    onQuickFilterChange,
+    selectedQuickFilter
 }) => {
 
     const [selectedRows, setSelectedRows] = useState(selectedRow?.length ? selectedRow : []);
@@ -101,39 +108,45 @@ const Datatable: React.FC<DatatableProps> = ({
     return (
         <div className="relative overflow-x-auto sm:rounded-lg rounded-lg border shadow border-[#eaecf0]">
            <div className="w-full p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800 flex justify-between items-center">
-            <div className="flex items-center gap-2">
-                {title && <span>{title}</span>}
-                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">
-                    {`${paginationTotalRows} records`}
-                </span>
-            </div>
-            {isSearchShow && (
-                <div className="ml-auto flex items-center gap-2">
-                    <TextInput
-                        id="search"
-                        placeholder="Search"
-                        icon={<Search />}
-                        type="text"
-                        onChange={(e) => debouncedOnSearchChange?.(e.target.value)}
-                    />
-                    <button
-                        type="button"
-                        className="
-                            flex cursor-pointer align-items-center gap-2 py-2.5 px-5 me-2 text-sm font-medium text-gray-900 bg-white 
-                            rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 
-                            focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-100 
-                            dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 
-                            dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700
-                        "
-                        onClick={() => onMultipleRowDelete?.(selectedRows)}
-                        >
-                        <Delete /> Bulk Delete
-                    </button>
+                <div className="flex items-center gap-2">
+                    {title && <span>{title}</span>}
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                        {`${paginationTotalRows} records`}
+                    </span>
                 </div>
-            )}
-        </div>
+                {isSearchShow && (
+                    <div className="ml-auto flex items-center gap-2">
+                        <TextInput
+                            id="search"
+                            placeholder="Search"
+                            icon={<Search />}
+                            type="text"
+                            onChange={(e) => debouncedOnSearchChange?.(e.target.value)}
+                        />
+                        <button
+                            type="button"
+                            className="
+                                flex cursor-pointer align-items-center gap-2 py-2.5 px-5 me-2 text-sm font-medium text-gray-900 bg-white 
+                                rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 
+                                focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-100 
+                                dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 
+                                dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700
+                            "
+                            onClick={() => onMultipleRowDelete?.(selectedRows)}
+                            >
+                            <Delete /> Bulk Delete
+                        </button>
+                    </div>
+                )}
+            </div>
 
-
+            {
+                quickFilters?.length > 0 && (
+                    <div className='p-5'>
+                        <ToggleGroup options={quickFilters} onChange={(value) => onQuickFilterChange?.(value)} value={selectedQuickFilter}/>
+                    </div>
+                )
+            }
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 {/* Table Header */}
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

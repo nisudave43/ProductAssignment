@@ -120,12 +120,23 @@ const DashBoard = (props: any) => {
 	const [isProductDialogShow, setProductDialogShow] = useState(false);
 	const [editProduct, setEditProduct] = useState({});
 	const { showToast, ToastComponent } = useToast();
+	const [quickFilterValue, setQuickFilterValue] = useState('all');
     const breadCrumbData = [
         {
             'title': 'Products',
             'link': '/Products',
         }
     ];
+
+	const [products, setProducts] = useState(allProductList);
+
+	const quickFilters = [
+		{ label: "All", value: "all" },
+		{ label: "Low Stock", value: "low stock" },
+		{ label: "Out of Stock", value: "out of stock" },
+		{ label: "In Stock", value: "in stock" }
+	];
+
 
 	const columns = [
 		{
@@ -182,7 +193,8 @@ const DashBoard = (props: any) => {
 				<div className="flex items-center gap-2">
 					<button className="text-gray-500 cursor-pointer" onClick={() => {
 						setProductId(row?.id);
-						onProductView(row?.id);
+						// onProductView(row?.id);
+						setEditProductData(row)
 					}}>
 						<ViewEye />
 					</button>
@@ -235,14 +247,7 @@ const DashBoard = (props: any) => {
         },
 
         onSuccess: (response) => {
-			setProductDialogShow(true);
-			setEditProduct({
-				id: response?.id,
-				title: response?.title,
-				brand: response?.brand,
-				category: response?.category,
-				price: response?.price
-			  });
+			setEditProductData(response)
         },
         onError: () => {
 			// setDialogShow(false);
@@ -250,6 +255,17 @@ const DashBoard = (props: any) => {
         },
     });
 
+	const setEditProductData = (data: any) => {
+		setProductDialogShow(true);
+		setEditProduct({
+			id: data?.id,
+			title: data?.title,
+			brand: data?.brand,
+			category: data?.category,
+			price: data?.price,
+			availabilityStatus: data?.availabilityStatus
+		  });
+	}
     const updateFilter = (fieldName:string, newValue: any) => {
 
         // Create a copy of the current filters object
@@ -261,24 +277,142 @@ const DashBoard = (props: any) => {
         setFilter(updatedFilters);
     };
 
-	const tableRows = useMemo(() => {
-		if (!productList?.products) return [];
+	// Function to filter out selected rows
+	const excludeSelectedProducts = (products: any[], selectedRow: any[]) => {
+		return products.filter((product) => !selectedRow.includes(product.id));
+	};
 
-		const filteredProducts = productList.products.filter(product => 
-			!selectedRow.includes(product.id) // Exclude products whose IDs are in selectedRow
+	// Function to filter products based on quickFilterValue
+	const applyQuickFilter = (products: any[], quickFilterValue: string) => {
+		if (!quickFilterValue || quickFilterValue === "all") return products;
+
+		return products.filter(
+			(product) => product?.availabilityStatus?.toLowerCase() === quickFilterValue.toLowerCase()
 		);
+	};
 
-		return getTableRows(filteredProducts);
-	}, [productList?.products, selectedRow]);
+	// Function to apply search filter
+	const applySearchFilter = (products: any[], searchQuery: string) => {
+		if (!searchQuery) return products;
+
+		const query = searchQuery.toLowerCase();
+		return products.filter(
+			(product) =>
+				product?.brand?.toLowerCase().includes(query) ||
+				product?.title?.toLowerCase().includes(query) ||
+				product?.category?.toLowerCase().includes(query)
+		);
+	};
+	// Function to handle pagination
+	const paginateProducts = (products: any[], page: number, limit: number) => {
+		const startIndex = (page - 1) * limit;
+		return products.slice(startIndex, startIndex + limit);
+	};
+
+	const { tableRows, totalRows } = useMemo(() => {
+		
+		console.log('products',products)
+		// Get products safely
+		const sourceProducts = products?.products || [];
+		if (!sourceProducts.length) return { tableRows: [], totalRows: 0 };
+
+		// Apply all filtering and pagination functions
+		let filteredProducts = excludeSelectedProducts(sourceProducts, selectedRow);
+		filteredProducts = applyQuickFilter(filteredProducts, quickFilterValue);
+		filteredProducts = applySearchFilter(filteredProducts, filter?.search);
+
+		// Apply pagination
+		const paginatedProducts = paginateProducts(filteredProducts, filter?.page ?? 1, filter?.limit ?? 10);
+		return { 
+			tableRows: getTableRows(paginatedProducts), 
+			totalRows: filteredProducts.length 
+		};
+	}, [JSON.stringify(filter), products?.products, selectedRow, quickFilterValue]);
 
 
 	const categoryCount = useMemo(() => {
-		return allProductList?.products?.reduce((acc, product) => {
+		return products?.products?.reduce((acc, product) => {
 		  acc[product.category] = (acc[product.category] || 0) + 1;
 		  return acc;
 		}, {});
-	  }, [allProductList]);
+	  }, [products]);
+	
+	  const onProductAdd = (product: any) => {
+		if (!product) {
+			console.error("Invalid product data");
+			return;
+		}
+	
+		setProducts((prevState) => {
+			const existingProducts = prevState?.products || [];
+	
+			// Generate new id based on the length of the existing product list
+			const newProduct = {
+				...product,
+				id: existingProducts.length + 1,
+			};
+	
+			return {
+				...prevState,
+				products: [...existingProducts, newProduct], // Add new product with new id
+			};
+		});
 
+		showToast("Product Added Successfully");
+		setProductDialogShow(false);
+		updateFilter('search', '');
+	};
+	
+	const onDeleteProduct = (productId: string) => {
+		if (!productId) {
+			console.error("Invalid product ID");
+			return;
+		}
+
+		setProducts((prevState: any) => {
+			const existingProducts = [...(prevState?.products || [])];
+	
+			// Filter out the product to be deleted
+			const updatedProducts = existingProducts.filter(product => product.id !== productId);
+	
+			// If no change, return previous state
+			if (existingProducts.length === updatedProducts.length) return prevState;
+	
+			return {
+				...prevState,
+				products: updatedProducts,
+			};
+		});
+	
+		showToast("Product Deleted Successfully");
+		setDialogShow(false);
+		updateFilter("search", "");
+	};
+	
+	const onProductEdit = (updatedProduct: any) => {
+		if (!updatedProduct || !updatedProduct.id) {
+			console.error("Invalid product data");
+			return;
+		}
+	
+		setProducts((prevState: any) => {
+			const existingProducts = prevState?.products || [];
+	
+			const updatedProducts = existingProducts.map((product) =>
+				product.id === updatedProduct.id ? { ...product, ...updatedProduct } : product
+			);
+	
+			return {
+				...prevState,
+				products: updatedProducts,
+			};
+		});
+
+		showToast("Product Updated Successfully");
+		setProductDialogShow(false);
+		updateFilter('search', '');
+	};
+	
 	return (
 		<div>
 			<div className='pt-3 pb-3'>
@@ -326,17 +460,18 @@ const DashBoard = (props: any) => {
 						setProductDialogShow(false);
 						setEditProduct({});
 					}}
+					onAdd={(product) => onProductAdd(product)}
+					onEdit={(product) => onProductEdit(product)}
 				/>
 			}
 			<Datatable 
 				columns={columns}
 				data={tableRows}
 				title={'Products'}
-				totalPages={Math.ceil((productList?.total || 0) / (filter?.limit || DEFAULT_PAGE_SIZE))}
-				paginationTotalRows={productList?.total}
+				totalPages={Math.ceil((totalRows || 0) / (filter?.limit || DEFAULT_PAGE_SIZE))}
+				paginationTotalRows={totalRows}
 				rowsPerPage={filter?.limit}
 				currentPage={filter?.page}
-				onSearchChange={(value) => console.log(value)}
 				onPageChange={(page) => {
 					updateFilter('page', page);
 				}}
@@ -349,6 +484,12 @@ const DashBoard = (props: any) => {
 				onMultipleRowDelete={(rows) => {
 					setSelectedRows(rows);
 				}}
+				quickFilters={quickFilters || []}
+				onQuickFilterChange={(value) => {
+					updateFilter('page', DEFAULT_FILTER_PAGE);
+					setQuickFilterValue(value);
+				}}
+				selectedQuickFilter={quickFilterValue}
 			/>
 			{
 				isDialogShow &&
@@ -358,7 +499,8 @@ const DashBoard = (props: any) => {
 						setDialogShow(false);
 					}}
 					onConfirm={() => {
-						onProductDelete(selectedProductId);
+						onDeleteProduct(selectedProductId);
+						// onProductDelete(selectedProductId);
 					}}
 					title="Delete Product"
 					message="Are you sure you want to delete this product?"

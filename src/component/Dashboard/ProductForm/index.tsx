@@ -14,10 +14,12 @@ type ProductFormProps = {
   data: any;
   id: string;
   onClose: () => void;
-  onSuccess: () => void
+  onSuccess: () => void,
+  onAdd: (product: any) => void,
+  onEdit: (product: any) => void
 };
 
-const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id, onSuccess }) => {
+const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id, onSuccess, onAdd, onEdit }) => {
   const [formData, setFormData] = useState(
     id
       ?
@@ -28,9 +30,15 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
         brand: "",
         category: "",
         price: "",
+        availabilityStatus: ""
       }
   );
 
+  const availabilityOptions = [
+    { value: "Low Stock", label: "Low Stock" },
+    { value: "Out of Stock", label: "Out of Stock" },
+    { value: "In Stock", label: "In Stock" },
+  ];
   const { showToast, ToastComponent } = useToast();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -43,6 +51,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
     if (!formData.category) newErrors.category = "Category is required";
     if (!formData.price) newErrors.price = "price is required";
     else if (isNaN(Number(formData.price))) newErrors.price = "price must be a number";
+    if (!formData.availabilityStatus) newErrors.availabilityStatus = "Availability status is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -63,12 +72,15 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
     if (validateForm()) {
 
         if(id) {
-          onProductEdit({
-            product: formData,
-            id: id
-          });
+
+          // onProductEdit({
+          //   product: formData,
+          //   id: id
+          // });
+          onEdit(formData)
         } else {
-          onProductAdd(formData);
+          onAdd(formData)
+          // onProductAdd(formData);
         }
     }
   };
@@ -133,6 +145,29 @@ const { mutate: onProductEdit } = useMutation({
           />
         </div>
       ))}
+
+        <div className="mb-4">
+          <label htmlFor="availabilityStatus" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Availability Status
+          </label>
+          <select
+            id="availabilityStatus"
+            name="availabilityStatus"
+            value={formData.availabilityStatus}
+            onChange={handleChange}
+            className={`bg-transparent border text-gray-900 text-lg font-normal rounded-lg block w-full p-2 dark:bg-transparent 
+              dark:text-white dark:placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 
+              ${errors.availabilityStatus ? "border-red-500 focus:ring-red-500 focus:border-red-500" : "border-gray-300 dark:border-gray-600"}`}
+          >
+            <option value="">Select Availability</option>
+            {availabilityOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          {errors.availabilityStatus && <p className="text-red-500 text-sm mt-1">{errors.availabilityStatus}</p>}
+        </div>
 
       {/* Category Dropdown */}
       <div className="mb-4">
