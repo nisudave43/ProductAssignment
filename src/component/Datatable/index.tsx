@@ -21,6 +21,7 @@ import truncateString from '@/helpers/truncateString';
 import TextInput from '@/component/TextInput';
 import { useDebouncedCallback } from 'use-debounce';
 import ToggleGroup from '@/component/ToggleGroup';
+import MultiSelectDropdown from "@/component/MultiSelectDropDown";
 
 // Map state
 
@@ -48,6 +49,10 @@ interface DatatableProps {
     quickFilters: { label: string; value: string }[];
     onQuickFilterChange: (value: string) => void,
     selectedQuickFilter: string,
+    multiSelectFilterOptions: { label: string; value: string }[],
+    multiSelectValue: string[],
+    onMultiSelectChange: (value: string[]) => void,
+    multiSelectLabel: string
 }
 
 const Datatable: React.FC<DatatableProps> = ({
@@ -66,7 +71,11 @@ const Datatable: React.FC<DatatableProps> = ({
     onMultipleRowDelete,
     quickFilters,
     onQuickFilterChange,
-    selectedQuickFilter
+    selectedQuickFilter,
+    multiSelectFilterOptions,
+    onMultiSelectChange,
+    multiSelectValue,
+    multiSelectLabel
 }) => {
 
     const [selectedRows, setSelectedRows] = useState(selectedRow?.length ? selectedRow : []);
@@ -140,13 +149,32 @@ const Datatable: React.FC<DatatableProps> = ({
                 )}
             </div>
 
-            {
-                quickFilters?.length > 0 && (
-                    <div className='p-5'>
-                        <ToggleGroup options={quickFilters} onChange={(value) => onQuickFilterChange?.(value)} value={selectedQuickFilter}/>
-                    </div>
-                )
-            }
+            <div className='p-5 flex align-items-center'>
+                {
+                    quickFilters?.length > 0 && (
+                        <div className='w-[50%]'>
+                            <ToggleGroup options={quickFilters} onChange={(value) => onQuickFilterChange?.(value)} value={selectedQuickFilter}/>
+                        </div>
+                    )
+                }
+                {
+                    multiSelectFilterOptions?.length > 0 && (
+                        <div className='w-[50%]'>
+                            <MultiSelectDropdown
+                                id="multi-select"
+                                label={multiSelectLabel}
+                                options={multiSelectFilterOptions}
+                                selectedValues={multiSelectValue}
+                                onChange={(value) => {
+                                    onMultiSelectChange?.(value)
+                                }}
+                                showLabel={false}
+                                />
+                        </div>
+                    )
+                }
+            </div>
+
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 {/* Table Header */}
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

@@ -88,6 +88,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 		page: DEFAULT_FILTER_PAGE,
 		limit: DEFAULT_PAGE_SIZE,
 		search: '',
+		category: [],
 	}
 	await Promise.allSettled([
 		queryClient.prefetchQuery(fetchProducts(filterObject)),
@@ -309,25 +310,37 @@ const DashBoard = (props: any) => {
 		return products.slice(startIndex, startIndex + limit);
 	};
 
-	const { tableRows, totalRows } = useMemo(() => {
-		
-		console.log('products',products)
-		// Get products safely
-		const sourceProducts = products?.products || [];
-		if (!sourceProducts.length) return { tableRows: [], totalRows: 0 };
+	const filterProductsByCategory = (products: any, category: any) => {
+		if (category.length > 0) {
+			return products.filter((product:any) => category.indexOf(product.category) !== -1);
+		}
+		return products; // Return all products if no category filter is applied
+	  };
 
-		// Apply all filtering and pagination functions
-		let filteredProducts = excludeSelectedProducts(sourceProducts, selectedRow);
-		filteredProducts = applyQuickFilter(filteredProducts, quickFilterValue);
-		filteredProducts = applySearchFilter(filteredProducts, filter?.search);
 
+	  const { tableRows, totalRows } = useMemo(() => {
+		// Ensure products exist
+		if (!products?.products?.length) return { tableRows: [], totalRows: 0 };
+	
+		// Extract filter values safely
+		const { search, page = 1, limit = 10, category } = filter || {};
+	
+		// Apply all filtering functions in a single pass
+		const filteredProducts = products.products
+			.filter(product => !selectedRow.includes(product)) // Exclude selected products
+			.filter(product => applyQuickFilter([product], quickFilterValue).length) // Quick filter
+			.filter(product => applySearchFilter([product], search).length) // Search filter
+			.filter(product => !Array.isArray(category) || category.length === 0 || category.includes(product.category)); // Category filter
+	
 		// Apply pagination
-		const paginatedProducts = paginateProducts(filteredProducts, filter?.page ?? 1, filter?.limit ?? 10);
+		const paginatedProducts = paginateProducts(filteredProducts, page, limit);
+	
 		return { 
 			tableRows: getTableRows(paginatedProducts), 
 			totalRows: filteredProducts.length 
 		};
-	}, [JSON.stringify(filter), products?.products, selectedRow, quickFilterValue]);
+	}, [filter?.search, filter?.page, filter?.limit, filter?.category?.length, products?.products, selectedRow, quickFilterValue]);
+	
 
 
 	const categoryCount = useMemo(() => {
@@ -413,6 +426,12 @@ const DashBoard = (props: any) => {
 		updateFilter('search', '');
 	};
 	
+	function convertToDropdownOptions(data) {
+		return data.map(item => ({
+		  value: item.slug,
+		  label: item.name
+		}));
+	  }
 	return (
 		<div>
 			<div className='pt-3 pb-3'>
@@ -490,6 +509,12 @@ const DashBoard = (props: any) => {
 					setQuickFilterValue(value);
 				}}
 				selectedQuickFilter={quickFilterValue}
+				multiSelectFilterOptions={convertToDropdownOptions(productCategoryList || [])}
+				onMultiSelectChange = {(value) => {
+					updateFilter('category', value);
+				}}
+				multiSelectValue={filter?.category}
+				multiSelectLabel='Category'
 			/>
 			{
 				isDialogShow &&
