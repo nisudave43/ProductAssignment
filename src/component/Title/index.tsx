@@ -84,7 +84,6 @@ const Title: React.FC<TitleProps> = ({
                             )}
                             <span>{btn.label}</span>
                           </button>
-                          
                         ))}
                     </div>
                 )}

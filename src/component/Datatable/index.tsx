@@ -1,5 +1,5 @@
 // React
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 // Constants
 
@@ -52,11 +52,18 @@ interface DatatableProps {
     multiSelectFilterOptions: { label: string; value: string }[],
     multiSelectValue: string[],
     onMultiSelectChange: (value: string[]) => void,
-    multiSelectLabel: string
+    multiSelectLabel: string,
+    onMultipleRowDelete: (selectedRows: string[]) => void,
+    onSortingChange: ({ sortField, sort }: { sortField: string; sort: string }) => void
+}
+
+const addSortKey = (columns: any) =>{
+    return columns.map((column: any) =>
+        column.sortable ? { ...column, sort: "asc" } : column
+    );
 }
 
 const Datatable: React.FC<DatatableProps> = ({
-    columns,
     data,
     title,
     isSearchShow = true,
@@ -75,16 +82,14 @@ const Datatable: React.FC<DatatableProps> = ({
     multiSelectFilterOptions,
     onMultiSelectChange,
     multiSelectValue,
-    multiSelectLabel
+    multiSelectLabel,
+    onSortingChange,
+    ...props
 }) => {
 
     const [selectedRows, setSelectedRows] = useState(selectedRow?.length ? selectedRow : []);
     const [selectAll, setSelectAll] = useState(false);
-
-    interface RowData {
-        id: string | number;
-        [key: string]: any; // Allow additional fields in row data
-    }
+    const [columns, setColumns] = useState(addSortKey(props?.columns));
 
     const handleSelectAll = (): void => {
         if (selectAll) {
@@ -98,9 +103,9 @@ const Datatable: React.FC<DatatableProps> = ({
         setSelectAll(!selectAll);
     };
     const handleRowSelect = (id: string | number): void => {
-        setSelectedRows((prevSelected) => {
+        setSelectedRows((prevSelected: any) => {
             const newSelected = prevSelected.includes(id)
-                ? prevSelected.filter((rowId) => rowId !== id)
+                ? prevSelected.filter((rowId : string) => rowId !== id)
                 : [...prevSelected, id];
             const selectedData = data.filter((row) => newSelected.includes(row.id));
             onRowSelect?.(selectedData); // Callback with selected row data
@@ -113,6 +118,18 @@ const Datatable: React.FC<DatatableProps> = ({
         },
         1000
     );
+
+    const handleSort = (sortField: string, currentSort: string) => {
+       const newSort = currentSort === "asc" ? "desc" : "asc";
+
+        setColumns((prevColumns: typeof columns) =>
+            prevColumns.map((col: typeof columns) =>
+                col.sortField === sortField ? { ...col, sort: newSort } : col
+            )
+        );
+        onSortingChange?.({ sortField, sort: newSort });
+    };
+
 
     return (
         <div className="relative overflow-x-auto sm:rounded-lg rounded-lg border shadow border-[#eaecf0]">
@@ -127,6 +144,7 @@ const Datatable: React.FC<DatatableProps> = ({
                     <div className="ml-auto flex items-center gap-2">
                         <TextInput
                             id="search"
+                            name="search"
                             placeholder="Search"
                             icon={<Search />}
                             type="text"
@@ -137,8 +155,8 @@ const Datatable: React.FC<DatatableProps> = ({
                             className="
                                 flex cursor-pointer justify-center items-center gap-2 py-2.5 px-5 text-sm font-medium text-gray-900 bg-white 
                                 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 
-                                focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-100 
-                                dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 
+                                focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-100
+                                dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400
                                 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700
                             "
                             onClick={() => onMultipleRowDelete?.(selectedRows)}
@@ -174,7 +192,8 @@ const Datatable: React.FC<DatatableProps> = ({
                                     onMultiSelectChange?.(value)
                                 }}
                                 showLabel={false}
-                                />
+                                maxVisibleChips={3}
+                            />
                         </div>
                     )
                 }
@@ -184,18 +203,28 @@ const Datatable: React.FC<DatatableProps> = ({
                     {/* Table Header */}
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
-                        <th scope="col" className="p-4">
-                            <input
-                                id="checkbox-all-search"
-                                type="checkbox"
-                                checked={selectAll}
-                                onChange={handleSelectAll}
-                                className="text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                        </th>
+                            <th scope="col" className="p-4">
+                                <input
+                                    id="checkbox-all-search"
+                                    type="checkbox"
+                                    checked={selectAll}
+                                    onChange={handleSelectAll}
+                                    className="text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                />
+                            </th>
                             {columns?.map((col, index) => (
-                                <th key={index} scope="col" className="px-6 py-3">
+                                <th
+                                    key={index}
+                                    scope="col"
+                                    className="px-6 py-3 cursor-pointer"
+                                    onClick={() => col.sortable && handleSort(col.sortField, col.sort)}
+                                >
                                     {col.name}
+                                    {col.sortable && (
+                                        <span className="ml-2">
+                                            {col.sort === "asc" ? "▲" : "▼"}
+                                        </span>
+                                    )}
                                 </th>
                             ))}
                         </tr>

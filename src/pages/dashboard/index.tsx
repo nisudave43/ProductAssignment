@@ -51,7 +51,7 @@ const fetchProducts = (filterObject: { page?: number; limit?: number, search?: s
 
     queryFn: async () => {
         // Makes an API call to get the paginated inventory list based on the filter and body
-        const response = await getProductList(filterObject?.page, filterObject?.limit, filterObject?.search);
+        const response = await getProductList(filterObject?.page, filterObject?.limit, filterObject?.search || '');
 
         // Returns the 'data' field from the response object
         return response;
@@ -89,6 +89,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
 		limit: DEFAULT_PAGE_SIZE,
 		search: '',
 		category: [],
+		sort: {
+			'sortField': 'title',
+			'sort' : 'asc'
+		}
 	}
 	await Promise.allSettled([
 		queryClient.prefetchQuery(fetchProducts(filterObject)),
@@ -173,7 +177,7 @@ const DashBoard = (props: any) => {
 					</span>
 				);
 			},
-			sortable: true,
+			sortable: false,
 			sortField: 'availabilityStatus',
 		},
 		{
@@ -185,7 +189,7 @@ const DashBoard = (props: any) => {
 		{
 			name: 'Price',
 			selector: (row: any) => row.price,
-			sortable: true,
+			sortable: false,
 			sortField: 'price',
 		},
 		{
@@ -318,15 +322,26 @@ const DashBoard = (props: any) => {
 	  };
 
 
+	  const sortProducts = (data: any, sortField: string, sort: string) => {
+		return data?.sort((a:any, b: any) => {
+			if (a[sortField] < b[sortField]) return sort === 'asc' ? -1 : 1;
+			if (a[sortField] > b[sortField]) return sort === 'asc' ? 1 : -1;
+			return 0;
+		});
+	}
+	
 	  const { tableRows, totalRows } = useMemo(() => {
 		// Ensure products exist
 		if (!products?.products?.length) return { tableRows: [], totalRows: 0 };
 	
 		// Extract filter values safely
-		const { search, page = 1, limit = 10, category } = filter || {};
+		const { search, page = 1, limit = 10, category, sort } = filter || {};
 	
+		 // Sort function
+		 const sortedProducts = sortProducts(products.products, sort?.sortField, sort?.sort) 
+
 		// Apply all filtering functions in a single pass
-		const filteredProducts = products.products
+		const filteredProducts = sortedProducts
 			.filter(product => !selectedRow.includes(product)) // Exclude selected products
 			.filter(product => applyQuickFilter([product], quickFilterValue).length) // Quick filter
 			.filter(product => applySearchFilter([product], search).length) // Search filter
@@ -339,7 +354,7 @@ const DashBoard = (props: any) => {
 			tableRows: getTableRows(paginatedProducts), 
 			totalRows: filteredProducts.length 
 		};
-	}, [filter?.search, filter?.page, filter?.limit, filter?.category?.length, products?.products, selectedRow, quickFilterValue]);
+	}, [filter?.search, filter?.sort, filter?.page, filter?.limit, filter?.category?.length, products?.products, selectedRow, quickFilterValue]);
 	
 
 
@@ -411,7 +426,7 @@ const DashBoard = (props: any) => {
 		setProducts((prevState: any) => {
 			const existingProducts = prevState?.products || [];
 	
-			const updatedProducts = existingProducts.map((product) =>
+			const updatedProducts = existingProducts.map((product: any) =>
 				product.id === updatedProduct.id ? { ...product, ...updatedProduct } : product
 			);
 	
@@ -426,8 +441,8 @@ const DashBoard = (props: any) => {
 		updateFilter('search', '');
 	};
 	
-	function convertToDropdownOptions(data) {
-		return data.map(item => ({
+	function convertToDropdownOptions(data :any) {
+		return data.map((item: any) => ({
 		  value: item.slug,
 		  label: item.name
 		}));
@@ -515,6 +530,9 @@ const DashBoard = (props: any) => {
 				}}
 				multiSelectValue={filter?.category}
 				multiSelectLabel='Category'
+				onSortingChange={(value) => {
+					updateFilter('sort', value);
+				}}
 			/>
 			{
 				isDialogShow &&
