@@ -24,7 +24,7 @@ const MultiSelectDropdown: React.FC<MultiSelectProps> = ({
   selectedValues = [],
   showLabel,
   onChange,
-  maxVisibleChips = 3
+  maxVisibleChips = 3,
 }) => {
   const [selectedOptions, setSelectedOptions] = useState<string[]>(selectedValues);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -72,37 +72,43 @@ const MultiSelectDropdown: React.FC<MultiSelectProps> = ({
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         tabIndex={0}
       >
-        {selectedOptions.slice(0, 3).map((option) => (
-          <div
-            key={option}
-            className="flex items-center bg-blue-500 text-white px-2 py-0.5 rounded-full text-sm"
-          >
-            {options.find((opt) => opt.value === option)?.label}
-            <button
-              type="button"
-              className="ml-2 text-white hover:text-gray-200 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeChip(option);
-              }}
-            >
-              ×
-            </button>
-          </div>
-        ))}
+        {selectedOptions.length === 0 ? (
+          <span className="text-gray-500 text-sm">{label}</span>
+        ) : (
+          <>
+            {selectedOptions.slice(0, maxVisibleChips).map((option) => (
+              <div
+                key={option}
+                className="flex items-center bg-blue-500 text-white px-2 py-0.5 rounded-full text-sm"
+              >
+                {options.find((opt) => opt.value === option)?.label}
+                <button
+                  type="button"
+                  className="ml-2 text-white hover:text-gray-200 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeChip(option);
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
 
-        {selectedOptions.length > maxVisibleChips && (
-          <div className="relative group">
-            <div className="px-2 py-0.5 text-black rounded-full text-sm">
-              +{selectedOptions.length - 3} more
-            </div>
-            {/* Tooltip showing all selected options */}
-            <div className="absolute left-0 top-8 hidden group-hover:block bg-gray-700 text-white text-sm rounded-md p-2 shadow-lg">
-              {selectedOptions.map((option) => (
-                <div key={option}>{options.find((opt) => opt.value === option)?.label}</div>
-              ))}
-            </div>
-          </div>
+            {selectedOptions.length > maxVisibleChips && (
+              <div className="relative group">
+                <div className="px-2 py-0.5 text-black rounded-full text-sm">
+                  +{selectedOptions.length - maxVisibleChips} more
+                </div>
+                {/* Tooltip showing all selected options */}
+                <div className="absolute left-0 top-8 hidden group-hover:block bg-gray-700 text-white text-sm rounded-md p-2 shadow-lg">
+                  {selectedOptions.map((option) => (
+                    <div key={option}>{options.find((opt) => opt.value === option)?.label}</div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

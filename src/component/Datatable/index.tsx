@@ -116,7 +116,7 @@ const Datatable: React.FC<DatatableProps> = ({
 
     return (
         <div className="relative overflow-x-auto sm:rounded-lg rounded-lg border shadow border-[#eaecf0]">
-           <div className="w-full p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800 flex justify-between items-center">
+           <div className="w-full p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800 sm:block lg:flex justify-between items-center">
                 <div className="flex items-center gap-2">
                     {title && <span>{title}</span>}
                     <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">
@@ -149,17 +149,17 @@ const Datatable: React.FC<DatatableProps> = ({
                 )}
             </div>
 
-            <div className='p-5 flex align-items-center'>
+            <div className='p-5 flex flex-col gap-2 sm:flex-row sm:items-center'>
                 {
                     quickFilters?.length > 0 && (
-                        <div className='w-[50%]'>
+                        <div className='w-full sm:w-[50%]'>
                             <ToggleGroup options={quickFilters} onChange={(value) => onQuickFilterChange?.(value)} value={selectedQuickFilter}/>
                         </div>
                     )
                 }
                 {
                     multiSelectFilterOptions?.length > 0 && (
-                        <div className='w-[50%]'>
+                        <div className='w-full sm:w-[50%]'>
                             <MultiSelectDropdown
                                 id="multi-select"
                                 label={multiSelectLabel}
@@ -174,65 +174,67 @@ const Datatable: React.FC<DatatableProps> = ({
                     )
                 }
             </div>
-
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                {/* Table Header */}
-                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                    <th scope="col" className="p-4">
-                        <input
-                            id="checkbox-all-search"
-                            type="checkbox"
-                            checked={selectAll}
-                            onChange={handleSelectAll}
-                            className="text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                        />
-                    </th>
-                        {columns?.map((col, index) => (
-                            <th key={index} scope="col" className="px-6 py-3">
-                                {col.name}
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-
-                {/* Table Body */}
-                <tbody>
-                    {data?.length > 0 ? (
-                        data?.map((row, rowIndex) => (
-                            <tr
-                                key={rowIndex}
-                                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"
-                            >
-                                <th scope="col" className="p-4">
-                                    <input
-                                        id="checkbox-all-search"
-                                        type="checkbox"
-                                        className="text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
-                                        checked={selectedRows.includes(row.id)}
-                                        onChange={() => handleRowSelect(row.id)}
-                                    />
-                                </th>
-                               {columns?.map((col, colIndex) => {
-                                    const cellValue = typeof col.selector === 'function' ? col.selector(row) : row[col.selector];
-                                    const displayValue = cellValue.length > 50 ? truncateString(cellValue, 50) : cellValue;
-                                    return (
-                                        <td key={colIndex} className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white" title={cellValue.length > 100 ? cellValue : ''}>
-                                            {displayValue}
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        ))
-                    ) : (
+            <div className='overflow-y-auto'>
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    {/* Table Header */}
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
-                            <td colSpan={columns?.length} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                                No data found
-                            </td>
+                        <th scope="col" className="p-4">
+                            <input
+                                id="checkbox-all-search"
+                                type="checkbox"
+                                checked={selectAll}
+                                onChange={handleSelectAll}
+                                className="text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                            />
+                        </th>
+                            {columns?.map((col, index) => (
+                                <th key={index} scope="col" className="px-6 py-3">
+                                    {col.name}
+                                </th>
+                            ))}
                         </tr>
-                    )}
-                </tbody>
-            </table>
+                    </thead>
+
+                    {/* Table Body */}
+                    <tbody>
+                        {data?.length > 0 ? (
+                            data?.map((row, rowIndex) => (
+                                <tr
+                                    key={rowIndex}
+                                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"
+                                >
+                                    <th scope="col" className="p-4">
+                                        <input
+                                            id="checkbox-all-search"
+                                            type="checkbox"
+                                            className="text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
+                                            checked={selectedRows.includes(row.id)}
+                                            onChange={() => handleRowSelect(row.id)}
+                                        />
+                                    </th>
+                                {columns?.map((col, colIndex) => {
+                                        const cellValue = typeof col.selector === 'function' ? col.selector(row) : row[col.selector];
+                                        const displayValue = cellValue.length > 50 ? truncateString(cellValue, 50) : cellValue;
+                                        return (
+                                            <td key={colIndex} className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white" title={cellValue.length > 100 ? cellValue : ''}>
+                                                {displayValue}
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={columns?.length} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                    No data found
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+           
 
             {paginationTotalRows > rowsPerPage && (
                 <div className="w-full p-4  flex justify-between items-center text-gray-700 dark:text-gray-300">
