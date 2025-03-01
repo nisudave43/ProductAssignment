@@ -117,7 +117,7 @@ const Datatable: React.FC<DatatableProps> = ({
     return (
         <div className="relative overflow-x-auto sm:rounded-lg rounded-lg border shadow border-[#eaecf0]">
            <div className="w-full p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800 sm:block lg:flex justify-between items-center">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mb-2 sm:mb-0">
                     {title && <span>{title}</span>}
                     <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">
                         {`${paginationTotalRows} records`}
@@ -135,7 +135,7 @@ const Datatable: React.FC<DatatableProps> = ({
                         <button
                             type="button"
                             className="
-                                flex cursor-pointer align-items-center gap-2 py-2.5 px-5 me-2 text-sm font-medium text-gray-900 bg-white 
+                                flex cursor-pointer justify-center items-center gap-2 py-2.5 px-5 text-sm font-medium text-gray-900 bg-white 
                                 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 
                                 focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-100 
                                 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 
@@ -143,7 +143,12 @@ const Datatable: React.FC<DatatableProps> = ({
                             "
                             onClick={() => onMultipleRowDelete?.(selectedRows)}
                             >
-                            <Delete /> Bulk Delete
+                            <span className='hidden sm:block'>
+                                <Delete />
+                            </span>
+                            <span className='whitespace-nowrap'>
+                                Bulk Delete
+                            </span>
                         </button>
                     </div>
                 )}
