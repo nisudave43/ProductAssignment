@@ -7,16 +7,16 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  return (
-    <div className="flex flex-col min-h-screen">
-      {/* Fixed Header */}
-      <Header />
-      <main className="flex-grow overflow-y-auto pt-16 pb-4">
-        <div className="max-w-screen-xl mx-auto px-4">{children}</div> {/* Centered content with fixed width */}
-      </main>
-      <Footer />
-    </div>
-  );
+    return (
+        <div className="flex flex-col min-h-screen">
+            {/* Fixed Header */}
+            <Header />
+            <main className="flex-grow overflow-y-auto pt-16 pb-4">
+                <div className="max-w-screen-xl mx-auto px-4">{children}</div> {/* Centered content with fixed width */}
+            </main>
+            <Footer />
+        </div>
+    );
 };
 
 export default Layout;

@@ -1,23 +1,23 @@
-import { useState } from "react";
-import Toast from "@/component/Toast";
+import { useState } from 'react';
+import Toast from '@/component/Toast';
 
 const useToast = () => {
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const showToast = (message: string, onCallback?: () => void, duration: number = 3000) => {
-    setToastMessage(message);
+    const showToast = (message: string, onCallback?: () => void, duration: number = 3000) => {
+        setToastMessage(message);
 
-    setTimeout(() => {
-      onCallback?.();
-      setToastMessage(null);
-    }, duration);
-  };
+        setTimeout(() => {
+            onCallback?.();
+            setToastMessage(null);
+        }, duration);
+    };
 
-  const ToastComponent = toastMessage ? (
-    <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
-  ) : null;
+    const ToastComponent = toastMessage ? (
+        <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+    ) : null;
 
-  return { showToast, ToastComponent };
+    return { showToast, ToastComponent };
 };
 
 export default useToast;

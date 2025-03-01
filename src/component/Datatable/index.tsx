@@ -21,7 +21,7 @@ import truncateString from '@/helpers/truncateString';
 import TextInput from '@/component/TextInput';
 import { useDebouncedCallback } from 'use-debounce';
 import ToggleGroup from '@/component/ToggleGroup';
-import MultiSelectDropdown from "@/component/MultiSelectDropDown";
+import MultiSelectDropdown from '@/component/MultiSelectDropDown';
 
 // Map state
 
@@ -59,9 +59,9 @@ interface DatatableProps {
 
 const addSortKey = (columns: any) =>{
     return columns.map((column: any) =>
-        column.sortable ? { ...column, sort: "asc" } : column
+        column.sortable ? { ...column, sort: 'asc' } : column,
     );
-}
+};
 
 const Datatable: React.FC<DatatableProps> = ({
     data,
@@ -116,16 +116,16 @@ const Datatable: React.FC<DatatableProps> = ({
         (value: string) => {
             onSearchChange?.(value);
         },
-        1000
+        1000,
     );
 
     const handleSort = (sortField: string, currentSort: string) => {
-       const newSort = currentSort === "asc" ? "desc" : "asc";
+        const newSort = currentSort === 'asc' ? 'desc' : 'asc';
 
         setColumns((prevColumns: typeof columns) =>
             prevColumns.map((col: typeof columns) =>
-                col.sortField === sortField ? { ...col, sort: newSort } : col
-            )
+                col.sortField === sortField ? { ...col, sort: newSort } : col,
+            ),
         );
         onSortingChange?.({ sortField, sort: newSort });
     };
@@ -133,7 +133,7 @@ const Datatable: React.FC<DatatableProps> = ({
 
     return (
         <div className="relative overflow-x-auto sm:rounded-lg rounded-lg border shadow border-[#eaecf0]">
-           <div className="w-full p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800 sm:block lg:flex justify-between items-center">
+            <div className="w-full p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800 sm:block lg:flex justify-between items-center">
                 <div className="flex items-center gap-2 mb-2 sm:mb-0">
                     {title && <span>{title}</span>}
                     <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">
@@ -153,14 +153,14 @@ const Datatable: React.FC<DatatableProps> = ({
                         <button
                             type="button"
                             className="
-                                flex cursor-pointer justify-center items-center gap-2 py-2.5 px-5 text-sm font-medium text-gray-900 bg-white 
-                                rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 
+                                flex cursor-pointer justify-center items-center gap-2 py-2.5 px-5 text-sm font-medium text-gray-900 bg-white
+                                rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700
                                 focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-100
                                 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400
                                 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700
                             "
                             onClick={() => onMultipleRowDelete?.(selectedRows)}
-                            >
+                        >
                             <span className='hidden sm:block'>
                                 <Delete />
                             </span>
@@ -189,7 +189,7 @@ const Datatable: React.FC<DatatableProps> = ({
                                 options={multiSelectFilterOptions}
                                 selectedValues={multiSelectValue}
                                 onChange={(value) => {
-                                    onMultiSelectChange?.(value)
+                                    onMultiSelectChange?.(value);
                                 }}
                                 showLabel={false}
                                 maxVisibleChips={3}
@@ -222,7 +222,7 @@ const Datatable: React.FC<DatatableProps> = ({
                                     {col.name}
                                     {col.sortable && (
                                         <span className="ml-2">
-                                            {col.sort === "asc" ? "▲" : "▼"}
+                                            {col.sort === 'asc' ? '▲' : '▼'}
                                         </span>
                                     )}
                                 </th>
@@ -242,12 +242,12 @@ const Datatable: React.FC<DatatableProps> = ({
                                         <input
                                             id="checkbox-all-search"
                                             type="checkbox"
-                                            className="text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
+                                            className="text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                             checked={selectedRows.includes(row.id)}
                                             onChange={() => handleRowSelect(row.id)}
                                         />
                                     </th>
-                                {columns?.map((col, colIndex) => {
+                                    {columns?.map((col, colIndex) => {
                                         const cellValue = typeof col.selector === 'function' ? col.selector(row) : row[col.selector];
                                         const displayValue = cellValue.length > 50 ? truncateString(cellValue, 50) : cellValue;
                                         return (
@@ -268,7 +268,7 @@ const Datatable: React.FC<DatatableProps> = ({
                     </tbody>
                 </table>
             </div>
-           
+
 
             {paginationTotalRows > rowsPerPage && (
                 <div className="w-full p-4  flex justify-between items-center text-gray-700 dark:text-gray-300">
@@ -276,22 +276,22 @@ const Datatable: React.FC<DatatableProps> = ({
                         Page {currentPage} of {totalPages}
                     </span>
                     <div className="flex gap-2">
-                    <button
-                        onClick={() => onPageChange?.(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className={`py-2.5 px-5 mr-2 mb-2 cursor-pointer text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 ${
-                            currentPage === 1 ? 'cursor-not-allowed opacity-50' : ''}`}
+                        <button
+                            onClick={() => onPageChange?.(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className={`py-2.5 px-5 mr-2 mb-2 cursor-pointer text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 ${
+                                currentPage === 1 ? 'cursor-not-allowed opacity-50' : ''}`}
                         >
                             Previous
                         </button>
 
                         <button
-                        onClick={() => onPageChange?.(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className={`py-2.5 px-5 mr-2 mb-2 cursor-pointer text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 ${
-                            currentPage === totalPages ? 'cursor-not-allowed opacity-50' : ''
+                            onClick={() => onPageChange?.(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className={`py-2.5 px-5 mr-2 mb-2 cursor-pointer text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 ${
+                                currentPage === totalPages ? 'cursor-not-allowed opacity-50' : ''
                             }`}
-                            >
+                        >
                                 Next
                         </button>
                     </div>

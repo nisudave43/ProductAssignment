@@ -11,9 +11,9 @@ const getAxiosInstance = () => {
     // baseURL for every request
     const instance = axios.create({
         baseURL : getApiBase(),
-        "headers" : {
+        'headers' : {
             'Content-Type': 'application/json',
-        }
+        },
     });
 
     // array of possible error statuses
@@ -47,7 +47,7 @@ const getAxiosInstance = () => {
                     'data' : null,
                 });
             }
-        }
+        },
     );
 
     return instance;

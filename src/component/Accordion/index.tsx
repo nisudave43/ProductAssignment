@@ -7,49 +7,49 @@ interface AccordionItemProps {
 }
 
 const AccordionItem: React.FC<AccordionItemProps> = ({ id, title, children }) => {
-  const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
-  const toggleAccordion = () => {
-    setIsOpen(prevState => !prevState);
-  };
+    const toggleAccordion = () => {
+        setIsOpen(prevState => !prevState);
+    };
 
-  return (
-    <div id={id} data-accordion="open">
-      <h2 id={`${id}-heading`}>
-        <button
-          type="button"
-          className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
-          aria-expanded={isOpen}
-          aria-controls={`${id}-body`}
-          onClick={toggleAccordion}
-        >
-          <span className="flex items-center">
-            {title}
-          </span>
-          <svg
-            className={`w-3 h-3 ${isOpen ? 'rotate-180' : ''} shrink-0`}
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 10 6"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M9 5 5 1 1 5"
-            />
-          </svg>
-        </button>
-      </h2>
-      <div id={`${id}-body`} className={isOpen ? '' : 'hidden'} aria-labelledby={`${id}-heading`}>
-        <div className="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
-          {children}
+    return (
+        <div id={id} data-accordion="open">
+            <h2 id={`${id}-heading`}>
+                <button
+                    type="button"
+                    className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
+                    aria-expanded={isOpen}
+                    aria-controls={`${id}-body`}
+                    onClick={toggleAccordion}
+                >
+                    <span className="flex items-center">
+                        {title}
+                    </span>
+                    <svg
+                        className={`w-3 h-3 ${isOpen ? 'rotate-180' : ''} shrink-0`}
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 10 6"
+                    >
+                        <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M9 5 5 1 1 5"
+                        />
+                    </svg>
+                </button>
+            </h2>
+            <div id={`${id}-body`} className={isOpen ? '' : 'hidden'} aria-labelledby={`${id}-heading`}>
+                <div className="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                    {children}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 interface AccordionProps {
@@ -57,7 +57,7 @@ interface AccordionProps {
 }
 
 const Accordion: React.FC<AccordionProps> = ({ children }) => {
-  return <div className="accordion">{children}</div>;
+    return <div className="accordion">{children}</div>;
 };
 
 export { Accordion, AccordionItem };

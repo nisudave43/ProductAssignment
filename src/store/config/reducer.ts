@@ -27,16 +27,16 @@ const initialState: ConfigState = {
 // Config reducer to handle action
 const configReducer = (state: ConfigState = initialState, action: ConfigAction): ConfigState => {
     switch (action.type) {
-        case 'LOAD_CONFIG_OBJECT':
-            return { ...state, config: {}, error: false, loading: true };
-        case 'GET_CONFIG_OBJECT':
-            return state;
-        case 'SET_CONFIG_OBJECT':
-            return { ...state, config: action.payload || {}, error: false, loading: false };
-        case 'ERROR_CONFIG_OBJECT':
-            return { ...state, config: {}, error: true, loading: false };
-        default:
-            return state;
+    case 'LOAD_CONFIG_OBJECT':
+        return { ...state, config: {}, error: false, loading: true };
+    case 'GET_CONFIG_OBJECT':
+        return state;
+    case 'SET_CONFIG_OBJECT':
+        return { ...state, config: action.payload || {}, error: false, loading: false };
+    case 'ERROR_CONFIG_OBJECT':
+        return { ...state, config: {}, error: true, loading: false };
+    default:
+        return state;
     }
 };
 

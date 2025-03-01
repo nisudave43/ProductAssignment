@@ -10,7 +10,7 @@ const addProduct = async (productObj: any) => {
     }
 
     const instance = getAxiosInstance();
-    return instance.post(`/products/add`, productObj);
+    return instance.post('/products/add', productObj);
 };
 
 export default addProduct;

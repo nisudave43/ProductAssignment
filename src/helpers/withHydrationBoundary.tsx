@@ -8,7 +8,7 @@ interface WithHydrationBoundaryProps {
 
 const withHydrationBoundary = <P extends object>(
     Component: ComponentType<P>,
-    propName: keyof WithHydrationBoundaryProps = 'dehydratedQueryClient'
+    propName: keyof WithHydrationBoundaryProps = 'dehydratedQueryClient',
 ): React.FC<P & WithHydrationBoundaryProps> => {
     const WithHydrationBoundary: React.FC<P & WithHydrationBoundaryProps> = (props) => {
         const { [propName]: dehydratedQueryClient, ...otherProps } = props;
