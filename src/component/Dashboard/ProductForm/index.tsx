@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import TextInput from "@/component/TextInput";
 import Search from "@/assets/icons/search";
-
+import Dropdown from "@/component/DropDown";
 
 import addProduct from '@/apis/products/addProduct';
 import editProduct from '@/apis/products/editProduct';
@@ -146,52 +146,25 @@ const { mutate: onProductEdit } = useMutation({
         </div>
       ))}
 
-        <div className="mb-4">
-          <label htmlFor="availabilityStatus" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Availability Status
-          </label>
-          <select
-            id="availabilityStatus"
-            name="availabilityStatus"
-            value={formData.availabilityStatus}
-            onChange={handleChange}
-            className={`bg-transparent border text-gray-900 text-lg font-normal rounded-lg block w-full p-2 dark:bg-transparent 
-              dark:text-white dark:placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 
-              ${errors.availabilityStatus ? "border-red-500 focus:ring-red-500 focus:border-red-500" : "border-gray-300 dark:border-gray-600"}`}
-          >
-            <option value="">Select Availability</option>
-            {availabilityOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          {errors.availabilityStatus && <p className="text-red-500 text-sm mt-1">{errors.availabilityStatus}</p>}
-        </div>
+      <Dropdown
+        id="availabilityStatus"
+        name="availabilityStatus"
+        label="Availability Status"
+        value={formData.availabilityStatus}
+        onChange={handleChange}
+        options={availabilityOptions}
+        error={errors.availabilityStatus}
+      />
 
-      {/* Category Dropdown */}
-      <div className="mb-4">
-        <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Category
-        </label>
-        <select
-          id="category"
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
-          className={`bg-transparent border text-gray-900 text-lg font-normal rounded-lg block w-full p-2 dark:bg-transparent 
-            dark:text-white dark:placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500
-            ${errors.category ? "border-red-500 focus:ring-red-500 focus:border-red-500" : "border-gray-300 dark:border-gray-600"}`}
-        >
-          <option value="">Select Category</option>
-          {categories?.map((cat) => (
-            <option key={cat} value={cat?.slug}>
-              {cat?.name}
-            </option>
-          ))}
-        </select>
-        {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
-      </div>
+      <Dropdown
+        id="category"
+        name="category"
+        label="Category"
+        value={formData.category}
+        onChange={handleChange}
+        options={categories.map(cat => ({ value: cat.slug, label: cat.name }))} 
+        error={errors.category}
+      />
 
       <button
         type="submit"
