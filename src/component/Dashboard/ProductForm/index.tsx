@@ -162,7 +162,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
                     label="Category"
                     value={formData.category}
                     onChange={handleChange}
-                    options={categories.map(cat => ({ value: cat.slug, label: cat.name }))}
+                    options={categories.map(cat => ({ value: cat?.slug || '', label: cat.name || ''}))}
                     error={errors.category}
                 />
 

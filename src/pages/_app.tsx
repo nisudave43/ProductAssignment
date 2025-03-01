@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 // Next
 
 // Constants
-import { DEFAULT_THEME } from '@/constants/configuration';
+
 //Store
 import store from '@/store/store';
 
@@ -25,7 +25,6 @@ import { Provider } from 'react-redux';
 
 // Other components
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider } from '@/contexts/ThemeProvider';
 import Layout from '@/component/Layout';
 
 // Type
@@ -53,14 +52,12 @@ export default function App({ Component, pageProps }: AppProps) {
     }));
 
     return (
-        <ThemeProvider defaultTheme={DEFAULT_THEME}>
-            <QueryClientProvider client={queryClient}>
-                <Provider store={store}>
-                    <Layout>
-                        <Component {...commonProps} />
-                    </Layout>
-                </Provider>
-            </QueryClientProvider>
-        </ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+            <Provider store={store}>
+                <Layout>
+                    <Component {...commonProps} />
+                </Layout>
+            </Provider>
+        </QueryClientProvider>
     );
 }

@@ -212,7 +212,7 @@ const Datatable: React.FC<DatatableProps> = ({
                                     className="text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                 />
                             </th>
-                            {columns?.map((col, index) => (
+                            {columns?.map((col: any, index: number) => (
                                 <th
                                     key={index}
                                     scope="col"
@@ -247,7 +247,7 @@ const Datatable: React.FC<DatatableProps> = ({
                                             onChange={() => handleRowSelect(row.id)}
                                         />
                                     </th>
-                                    {columns?.map((col, colIndex) => {
+                                    {columns?.map((col: any, colIndex: number) => {
                                         const cellValue = typeof col.selector === 'function' ? col.selector(row) : row[col.selector];
                                         const displayValue = cellValue.length > 50 ? truncateString(cellValue, 50) : cellValue;
                                         return (

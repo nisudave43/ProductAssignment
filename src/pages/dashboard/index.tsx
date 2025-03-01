@@ -342,10 +342,10 @@ const DashBoard = (props: any) => {
 
         // Apply all filtering functions in a single pass
         const filteredProducts = sortedProducts
-            .filter(product => !selectedRow.includes(product)) // Exclude selected products
-            .filter(product => applyQuickFilter([product], quickFilterValue).length) // Quick filter
-            .filter(product => applySearchFilter([product], search).length) // Search filter
-            .filter(product => !Array.isArray(category) || category.length === 0 || category.includes(product.category)); // Category filter
+            .filter((product: any) => !selectedRow.includes(product)) // Exclude selected products
+            .filter((product: any) => applyQuickFilter([product], quickFilterValue).length) // Quick filter
+            .filter((product: any) => applySearchFilter([product], search).length) // Search filter
+            .filter((product: any) => !Array.isArray(category) || category.length === 0 || category.includes(product.category)); // Category filter
 
         // Apply pagination
         const paginatedProducts = paginateProducts(filteredProducts, page, limit);
@@ -358,11 +358,13 @@ const DashBoard = (props: any) => {
 
 
     const categoryCount = useMemo(() => {
-        return products?.products?.reduce((acc, product) => {
-		  acc[product.category] = (acc[product.category] || 0) + 1;
-		  return acc;
+        if (!products?.products) return {}; // Ensure safety
+    
+        return products.products.reduce<Record<string, number>>((acc, product) => {
+            acc[product.category] = (acc[product.category] || 0) + 1;
+            return acc;
         }, {});
-	  }, [products]);
+    }, [products]);
 
 	  const onProductAdd = (product: any) => {
         if (!product) {
@@ -370,7 +372,7 @@ const DashBoard = (props: any) => {
             return;
         }
 
-        setProducts((prevState) => {
+        setProducts((prevState: any) => {
             const existingProducts = prevState?.products || [];
 
             // Generate new id based on the length of the existing product list
@@ -483,7 +485,7 @@ const DashBoard = (props: any) => {
 				<ProductForm
 				    categories={productCategoryList || []}
 				    data={editProduct}
-				    id={editProduct?.id}
+				    id={editProduct?.id || ''}
 				    onClose={() => {
 				        setProductDialogShow(false);
 				        setEditProduct({});
@@ -511,8 +513,6 @@ const DashBoard = (props: any) => {
                 onSearchChange={(value) => {
                     updateFilter('page', DEFAULT_FILTER_PAGE);
                     updateFilter('search', value);
-                }}
-                onRowSelect={(rows) => {
                 }}
                 onMultipleRowDelete={(rows) => {
                     setSelectedRows(rows);

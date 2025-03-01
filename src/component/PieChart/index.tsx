@@ -3,8 +3,10 @@ import React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 
-const BarPie: React.FC = (props) => {
-
+type BarPieProps = {
+    data?: any;
+}
+const BarPie: React.FC<BarPieProps> = (props) => {
     const {
         data,
     } = props;
