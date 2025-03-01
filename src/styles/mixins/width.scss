@@ -1,5 +1,0 @@
-@use "sass:math";
-
-@mixin width($width, $unit:'%') {
-    width: #{$width} + #{$unit}
-}
