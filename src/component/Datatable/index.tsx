@@ -1,21 +1,28 @@
 // React
 import React, { useMemo, useState } from 'react';
 
-// Constants
-
 // Next
 
-// Redux
+// Constants
 
-// Icons
-import Search from '@/assets/icons/search';
-import Delete from '@/assets/icons/delete';
+// Store
 
 // Helpers
 import truncateString from '@/helpers/truncateString';
-// Styles
 
-// Types
+// Contexts
+
+// Redux
+
+// Apis
+
+// Action
+
+// Icon
+import Search from '@/assets/icons/search';
+import Delete from '@/assets/icons/delete';
+
+// Layout
 
 // Other components
 import TextInput from '@/component/TextInput';
@@ -23,7 +30,9 @@ import { useDebouncedCallback } from 'use-debounce';
 import ToggleGroup from '@/component/ToggleGroup';
 import MultiSelectDropdown from '@/component/MultiSelectDropDown';
 
-// Map state
+// Type
+
+// Styles
 
 interface Column {
     name: string;

@@ -1,6 +1,33 @@
+// React
 import React, { ReactNode } from 'react';
-import Header from '@/component/Header';  // Adjust the path if necessary
-import Footer from '@/component/Footer';  // Adjust the path if necessary
+
+// Next
+
+// Constants
+
+// Store
+
+// Helpers
+
+// Contexts
+
+// Redux
+
+// Apis
+
+// Action
+
+// Icon
+
+// Layout
+
+// Other components
+import Header from '@/component/Header';
+import Footer from '@/component/Footer';
+
+// Type
+
+// Styles
 
 interface LayoutProps {
   children: ReactNode;  // This will represent the content of the page

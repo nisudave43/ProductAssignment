@@ -1,7 +1,34 @@
+
+// React
 import React from 'react';
 
+// Next
+
+// Constants
+
+// Store
+
+// Helpers
+
+// Contexts
+
+// Redux
+
+// Apis
+
+// Action
+
+// Icon
+
+// Layout
+
+// Other components
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
+
+// Type
+
+// Styles
 
 type BarPieProps = {
     data?: any;

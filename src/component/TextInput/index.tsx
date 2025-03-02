@@ -1,4 +1,31 @@
+// React
 import React, { ReactNode } from 'react';
+
+// Next
+
+// Constants
+
+// Store
+
+// Helpers
+
+// Contexts
+
+// Redux
+
+// Apis
+
+// Action
+
+// Icon
+
+// Layout
+
+// Other components
+
+// Type
+
+// Styles
 
 type TextInputProps = {
   label?: string;

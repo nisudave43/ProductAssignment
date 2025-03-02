@@ -1,4 +1,30 @@
+// React
 import React from 'react';
+// Next
+
+// Constants
+
+// Store
+
+// Helpers
+
+// Contexts
+
+// Redux
+
+// Apis
+
+// Action
+
+// Icon
+
+// Layout
+
+// Other components
+
+// Type
+
+// Styles
 
 /**
  * A simple footer component.

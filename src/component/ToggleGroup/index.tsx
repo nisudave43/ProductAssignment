@@ -1,4 +1,30 @@
-import { useState } from 'react';
+// React
+import React, { useState } from 'react';
+// Next
+
+// Constants
+
+// Store
+
+// Helpers
+
+// Contexts
+
+// Redux
+
+// Apis
+
+// Action
+
+// Icon
+
+// Layout
+
+// Other components
+
+// Type
+
+// Styles
 
 type Option = {
   label: string;

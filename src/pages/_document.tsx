@@ -1,4 +1,31 @@
+// React
+
+// Next
 import { Html, Head, Main, NextScript } from 'next/document';
+
+// Constants
+
+// Store
+
+// Helpers
+
+// Contexts
+
+// Redux
+
+// Apis
+
+// Action
+
+// Icon
+
+// Layout
+
+// Other components
+
+// Type
+
+// Styles
 
 /**
  * Custom Document component for the Next.js application.

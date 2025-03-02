@@ -6,7 +6,7 @@ import type { GetServerSideProps } from 'next';
 
 // Constants
 import { DEFAULT_PAGE_SIZE, DEFAULT_FILTER_PAGE } from '@/constants/configuration';
-//Store
+// Store
 
 // Helpers
 import withHydrationBoundary from '@/helpers/withHydrationBoundary';
@@ -15,7 +15,7 @@ import areArraysEqual from '@/helpers/areArraysEqual';
 
 // Contexts
 
-//Redux
+// Redux
 
 // Apis
 import getProductList from '@/apis/products/getProductList';
@@ -45,7 +45,7 @@ import { Accordion, AccordionItem } from '@/component/Accordion';
 
 // Type
 
-//Styles
+// Styles
 
 /**
  * React query hook to fetch the list of products based on the provided filterObject.
@@ -548,6 +548,7 @@ const DashBoard = (props: any) => {
         showToast('Product Added Successfully');
         setProductDialogShow(false);
         updateFilter('search', '');
+        setEditProduct({});
     };
 
 
@@ -623,6 +624,7 @@ const DashBoard = (props: any) => {
         showToast('Product Updated Successfully');
         setProductDialogShow(false);
         updateFilter('search', '');
+        setEditProduct({});
     };
 
     /**

@@ -1,13 +1,40 @@
+// React
 import React, { useState } from 'react';
-import TextInput from '@/component/TextInput';
-import Search from '@/assets/icons/search';
-import Dropdown from '@/component/DropDown';
 
+// Next
+
+// Constants
+
+// Store
+
+// Helpers
+import useToast from '@/helpers/customHooks/useToast';
+
+// Contexts
+
+// Redux
+
+// Apis
 import addProduct from '@/apis/products/addProduct';
 import editProduct from '@/apis/products/editProduct';
+
+// Action
+
+// Icon
+import Dollar from '@/assets/icons/dollar';
+import DocumentIcon from '@/assets/icons/document';
+import Tag from '@/assets/icons/tag';
+
+// Layout
+
+// Other components
+import TextInput from '@/component/TextInput';
+import Dropdown from '@/component/DropDown';
 import { useMutation } from '@tanstack/react-query';
 
-import useToast from '@/helpers/customHooks/useToast';
+// Type
+
+// Styles
 
 type ProductFormProps = {
   categories: string[]; // Categories as an array of strings
@@ -78,9 +105,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
     };
 
     const fields = [
-        { name: 'title', label: 'Title', icon: <Search />},
-        { name: 'brand', label: 'Brand', icon: <Search /> },
-        { name: 'price', label: 'Price', type: 'number', icon: <Search /> },
+        { name: 'title', label: 'Title', icon: <DocumentIcon />},
+        { name: 'brand', label: 'Brand', icon: <Tag /> },
+        { name: 'price', label: 'Price', type: 'number', icon: <Dollar /> },
     ];
     /**
      * Handles change event on form inputs.
