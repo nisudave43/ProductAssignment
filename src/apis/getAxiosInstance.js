@@ -6,6 +6,11 @@ import axios from 'axios';
 import { CONFIG } from '@/helpers/getApiBase';
 import { getApiBase } from '@/helpers/getApiBase';
 
+/**
+ * Function to get common axios instance.
+ * This instance will have common configurations for all APIs like base url, timeout, headers, interceptors etc.
+ * @returns {AxiosInstance} - Axios instance
+ */
 const getAxiosInstance = () => {
 
     // baseURL for every request

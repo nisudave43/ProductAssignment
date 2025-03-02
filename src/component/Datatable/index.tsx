@@ -57,11 +57,43 @@ interface DatatableProps {
     onSortingChange: ({ sortField, sort }: { sortField: string; sort: string }) => void
 }
 
+/**
+ * Add a sort key to a column if it is sortable.
+ * @param {Object[]} columns An array of column objects.
+ * @return {Object[]} The columns with sort key added to sortable columns.
+ */
 const addSortKey = (columns: any) =>{
     return columns.map((column: any) =>
         column.sortable ? { ...column, sort: 'asc' } : column,
     );
 };
+
+/**
+ * Datatable component is a versatile, reusable table that supports features like
+ * pagination, sorting, searching, quick filters, multi-select filters, and bulk delete.
+ * 
+ * Props:
+ * - `data`: Array of row data objects to be displayed in the table.
+ * - `title`: String title for the table.
+ * - `isSearchShow`: Boolean to show/hide the search input.
+ * - `currentPage`: Current page number for pagination.
+ * - `totalPages`: Total number of pages available.
+ * - `onPageChange`: Callback function to handle page changes.
+ * - `onSearchChange`: Callback function triggered on search input change.
+ * - `paginationTotalRows`: Total number of rows available for pagination.
+ * - `rowsPerPage`: Number of rows to display per page.
+ * - `onRowSelect`: Callback function called with selected row IDs.
+ * - `selectedRow`: Array of initially selected row IDs.
+ * - `onMultipleRowDelete`: Callback function for bulk row deletion.
+ * - `quickFilters`: Array of quick filter options with labels and values.
+ * - `onQuickFilterChange`: Callback function for quick filter changes.
+ * - `selectedQuickFilter`: Currently selected quick filter value.
+ * - `multiSelectFilterOptions`: Array of multi-select filter options.
+ * - `onMultiSelectChange`: Callback function for changes in multi-select filter.
+ * - `multiSelectValue`: Array of selected values in multi-select filter.
+ * - `multiSelectLabel`: Label for the multi-select filter dropdown.
+ * - `onSortingChange`: Callback function triggered on sorting change, with sort field and direction.
+ */
 
 const Datatable: React.FC<DatatableProps> = ({
     data,
@@ -91,6 +123,15 @@ const Datatable: React.FC<DatatableProps> = ({
     const [selectAll, setSelectAll] = useState(false);
     const [columns, setColumns] = useState(addSortKey(props?.columns));
 
+    /**
+     * Toggles selection of all rows in the table.
+     * 
+     * When all rows are already selected, deselects all rows and calls the
+     * `onRowSelect` callback with an empty array.
+     * 
+     * When no rows are selected, selects all rows and calls the `onRowSelect`
+     * callback with an array of the selected row data.
+     */
     const handleSelectAll = (): void => {
         if (selectAll) {
             setSelectedRows([]);
@@ -102,6 +143,18 @@ const Datatable: React.FC<DatatableProps> = ({
         }
         setSelectAll(!selectAll);
     };
+    /**
+     * Toggles selection of a row in the table.
+     * 
+     * When a row is already selected, deselects the row and removes it from the
+     * `selectedRows` state array.
+     * 
+     * When a row is not already selected, selects the row and adds it to the
+     * `selectedRows` state array.
+     * 
+     * Calls the `onRowSelect` callback with an array of selected row data.
+     * @param id The ID of the row to toggle selection of.
+     */
     const handleRowSelect = (id: string | number): void => {
         setSelectedRows((prevSelected: any) => {
             const newSelected = prevSelected.includes(id)
@@ -112,13 +165,31 @@ const Datatable: React.FC<DatatableProps> = ({
             return newSelected;
         });
     };
+
+    /**
+     * Debounced search handler that delays the execution of `onSearchChange` 
+     * until the user stops typing for a specified time (1000ms).
+     *
+     * This helps reduce the number of API calls or state updates 
+     * by only triggering the search after the user has paused typing.
+     *
+     * @param value The search input value entered by the user.
+    */
     const debouncedOnSearchChange = useDebouncedCallback(
         (value: string) => {
             onSearchChange?.(value);
         },
-        1000,
+        1000, // Delay in milliseconds before triggering `onSearchChange`
     );
 
+    /**
+     * Toggles the sort order of a column when the user clicks on its header.
+     * 
+     * Updates the `columns` state with the new sort order and calls the
+     * `onSortingChange` callback with the new sort data.
+     * @param sortField The field to sort by.
+     * @param currentSort The current sort order of the column.
+     */
     const handleSort = (sortField: string, currentSort: string) => {
         const newSort = currentSort === 'asc' ? 'desc' : 'asc';
 

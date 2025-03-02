@@ -11,9 +11,38 @@ type ToggleGroupProps = {
   value?: string
 };
 
+/**
+ * A toggle group component that renders a group of toggle buttons.
+ *
+ * @example
+ * <ToggleGroup
+ *     options={[
+ *         { label: 'Option 1', value: 'option1' },
+ *         { label: 'Option 2', value: 'option2' },
+ *         { label: 'Option 3', value: 'option3' },
+ *     ]}
+ *     onChange={(selected) => console.log(selected)}
+ *     value="option1"
+ * />
+ *
+ * @param {ToggleGroupProps} props - The component props.
+ * @param {Option[]} props.options - The options to display as toggle buttons.
+ * @param {(selected: string) => void} [props.onChange] - The function to call when a toggle button is selected.
+ * @param {string} [props.value] - The value of the selected toggle button, defaults to null.
+ *
+ * @returns JSX.Element - The rendered toggle group component.
+ */
 const ToggleGroup: React.FC<ToggleGroupProps> = ({ options, onChange, value }) => {
     const [selected, setSelected] = useState<string | null>(value || null);
 
+    /**
+     * Handles the selection of a toggle button.
+     *
+     * Updates the selected state with the given value and calls the onChange
+     * callback with the given value, if provided.
+     *
+     * @param {string} value - The value of the toggle button selected.
+     */
     const handleSelect = (value: string) => {
         setSelected(value);
         onChange?.(value);

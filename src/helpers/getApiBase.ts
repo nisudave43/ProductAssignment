@@ -1,7 +1,5 @@
 // API URLs based on env
 const apiBaseURL: string | undefined = process.env.APIBASE || process.env.NEXT_PUBLIC_APIBASE;
-const ohApiURL: string | undefined = process.env.OH_API_URL || process.env.NEXT_PUBLIC_OH_API_URL;
-const basicAuthToken: string | undefined = process.env.OH_AUTH_TOKEN || process.env.NEXT_PUBLIC_OH_AUTH_TOKEN;
 
 // Common Configuration related to API
 export const CONFIG: { env: string; timeout: number } = {

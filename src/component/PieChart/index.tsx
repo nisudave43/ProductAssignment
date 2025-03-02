@@ -6,6 +6,17 @@ import { Pie } from 'react-chartjs-2';
 type BarPieProps = {
     data?: any;
 }
+    /**
+     * Renders a pie chart component.
+     *
+     * The component expects a `data` prop that is an object where the keys are
+     * the categories and the values are the counts of products in each category.
+     *
+     * @param {Object} props - Component props.
+     * @param {Object} props.data - Object where the keys are categories and the values are the counts of products in each category.
+     *
+     * @returns The pie chart component.
+     */
 const BarPie: React.FC<BarPieProps> = (props) => {
     const {
         data,

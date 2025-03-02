@@ -33,6 +33,22 @@ import type { AppProps } from 'next/app';
 //Styles
 import '@/styles/globals.css';
 
+    /**
+     * The main application component.
+     *
+     * This component wraps the entire application and provides the context for
+     * the application's state and React Query client.
+     *
+     * It also sets up the Redux store and React Query client instance.
+     *
+     * @prop {ReactNode} Component - The page component to be rendered.
+     * @prop {object} pageProps - The props passed to the page component.
+     *
+     * @example
+     * import App from '@/pages/_app';
+     *
+     * <App Component={MyPage} pageProps={{ foo: 'bar' }} />
+     */
 export default function App({ Component, pageProps }: AppProps) {
 
     const commonProps = {

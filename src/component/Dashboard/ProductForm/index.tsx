@@ -19,6 +19,21 @@ type ProductFormProps = {
   onEdit: (product: any) => void
 };
 
+/**
+ * ProductForm component is a form used to add or edit product details.
+ *
+ * @param {Object} props - Component props.
+ * @param {string[]} props.categories - Array of category strings for the dropdown.
+ * @param {function} props.onClose - Function to close the form.
+ * @param {any} props.data - Product data to pre-fill the form when editing.
+ * @param {string} props.id - ID of the product being edited, if applicable.
+ * @param {function} props.onSuccess - Callback function to invoke on successful form submission.
+ * @param {function} props.onAdd - Callback function to invoke when adding a new product.
+ * @param {function} props.onEdit - Callback function to invoke when editing an existing product.
+ *
+ * @returns JSX.Element - The rendered form component.
+ */
+
 const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id, onSuccess, onAdd, onEdit }) => {
     const [formData, setFormData] = useState(
         id
@@ -43,6 +58,11 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
 
     const [errors, setErrors] = useState<Record<string, string>>({});
 
+    /**
+     * Validates the form data.
+     *
+     * @returns boolean - True if form is valid, false otherwise.
+     */
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
 
@@ -62,10 +82,28 @@ const ProductForm: React.FC<ProductFormProps> = ({ categories, onClose, data, id
         { name: 'brand', label: 'Brand', icon: <Search /> },
         { name: 'price', label: 'Price', type: 'number', icon: <Search /> },
     ];
+    /**
+     * Handles change event on form inputs.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement | HTMLSelectElement>} e - The change event.
+     *
+     * Updates the formData state with the new value and clears any error for the input.
+     */
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         setErrors({ ...errors, [e.target.name]: '' }); // Clear error on input
     };
+
+/**
+ * Handles the form submission event.
+ *
+ * @param {React.FormEvent} e - The form submission event.
+ *
+ * Prevents the default form submission behavior. Validates the form data,
+ * and if valid, performs an edit or add operation based on the presence of an `id`.
+ * If `id` is present, calls the `onEdit` function to update an existing product.
+ * Otherwise, calls the `onAdd` function to add a new product.
+ */
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

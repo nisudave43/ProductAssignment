@@ -9,6 +9,20 @@ type DialogProps = {
   confirmBtnText?: string;
 };
 
+/**
+ * Dialog component renders a modal dialog with a title, message, and action buttons.
+ *
+ * @param {Object} props - Component props.
+ * @param {function} props.onClose - Callback function to handle dialog close action.
+ * @param {function} props.onConfirm - Callback function to handle confirmation action.
+ * @param {string} props.title - The title text displayed in the dialog.
+ * @param {string} props.message - The message text displayed in the dialog.
+ * @param {string} [props.cancelBtnText='Cancel'] - Text for the cancel button.
+ * @param {string} [props.confirmBtnText='Confirm'] - Text for the confirm button.
+ *
+ * @returns JSX.Element - The rendered dialog component.
+ */
+
 const Dialog: React.FC<DialogProps> = ({
     onClose,
     onConfirm,

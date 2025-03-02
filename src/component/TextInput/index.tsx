@@ -11,6 +11,29 @@ type TextInputProps = {
   type?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
+/**
+ * A text input component.
+ *
+ * @prop {string} label - The label of the text input.
+ * @prop {string} id - The HTML id of the text input.
+ * @prop {string} name - The HTML name of the text input.
+ * @prop {string} [placeholder] - The placeholder text of the text input.
+ * @prop {ReactNode} [icon] - The icon to display at the start of the text input.
+ * @prop {string} [error] - The error message to display below the text input.
+ * @prop {(event: React.ChangeEvent<HTMLInputElement>) => void} [onChange] - The function to call when the value of the text input changes.
+ * @prop {string} [type] - The type of the text input, defaults to "text".
+ *
+ * @example
+ * <TextInput
+ *     label="Email address"
+ *     id="email"
+ *     name="email"
+ *     placeholder="e.g. example@gmail.com"
+ *     icon={<EmailIcon />}
+ *     error="Please enter a valid email address"
+ *     onChange={(event) => console.log(event.target.value)}
+ * />
+ */
 const TextInput: React.FC<TextInputProps> = ({
     label,
     id,

@@ -5,8 +5,22 @@ type ToastProps = {
   onClose: () => void;
 };
 
+/**
+ * A toast component that displays a message and a close button.
+ *
+ * @prop {string} [message] - The message to display in the toast.
+ * @prop {() => void} onClose - The function to call when the close button is clicked.
+ *
+ * @example
+ * import { Toast } from '@/component/Toast';
+ *
+ * <Toast
+ *     message="This is a toast!"
+ *     onClose={() => console.log('Toast closed!')}
+ * />
+ */
 const Toast: React.FC<ToastProps> = ({ message, onClose }) => {
-    if (!message) return null; // Prevent rendering if no message
+    if (!message) return null;
 
     return (
         <div className="fixed z-1 top-4 right-4 flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800" role="alert">

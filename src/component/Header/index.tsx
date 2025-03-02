@@ -1,5 +1,15 @@
 import React from 'react';
 
+/**
+ * Header component that displays the main navigation bar of the website.
+ *
+ * This component includes the website title and a navigation menu with links to
+ * different sections of the site. The header is styled to be fixed at the top of
+ * the page with a dark background and white text.
+ *
+ * @returns The header component.
+ */
+
 const Header: React.FC = () => {
     return (
         <header className="bg-gray-800 text-white py-4 fixed w-full z-10">

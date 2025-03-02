@@ -33,6 +33,24 @@ interface TitleProps {
     endAdornment?: React.ReactNode;
 }
 
+/**
+ * Title component that displays a title, optional description, and action buttons.
+ *
+ * This component includes optional adornments and renders the page or document title
+ * inside a `<Head>` component for SEO purposes. The layout adjusts for different
+ * screen sizes with a two-line layout for titles and descriptions, and action buttons
+ * appear at the end of the lines.
+ *
+ * @param {string} title - The main title text.
+ * @param {string} [documentTitle] - The document title for the HTML head.
+ * @param {string} [description] - An optional description text.
+ * @param {ActionButton[]} [actionButtons] - An array of action buttons to display.
+ * @param {'primary' | 'secondary'} [defaultActionButtonVariant='primary'] - Default variant for action buttons.
+ * @param {React.ReactNode} [startAdornment] - Optional adornment displayed before the title.
+ * @param {React.ReactNode} [endAdornment] - Optional adornment displayed after the title.
+ * @returns JSX.Element - The rendered title component.
+ */
+
 const Title: React.FC<TitleProps> = ({
     title = '',
     documentTitle = '',
@@ -47,11 +65,8 @@ const Title: React.FC<TitleProps> = ({
             <Head>
                 <title>{documentTitle || title}</title>
             </Head>
-
-            {/* Title, Description & Buttons in a Two-line Layout */}
             <div className="w-full flex flex-col md:flex-row md:items-end justify-between">
                 <div>
-                    {/* Title and Description stacked on two lines */}
                     <div className="flex items-center space-x-2">
                         {startAdornment && <span>{startAdornment}</span>}
                         <h1 className="capitalize text-xl font-medium text-[#101828] leading-[1.875rem]">
@@ -65,7 +80,6 @@ const Title: React.FC<TitleProps> = ({
                     )}
                 </div>
 
-                {/* Action Buttons appear at the end of both lines */}
                 {actionButtons.length > 0 && (
                     <div className="flex flex-wrap justify-end gap-2 mt-3 md:mt-0">
                         {actionButtons.map((btn, index) => (

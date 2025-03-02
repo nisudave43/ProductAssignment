@@ -15,6 +15,20 @@ interface MultiSelectProps {
   maxVisibleChips: number;
 }
 
+/**
+ * A multi-select dropdown component that displays a list of options
+ * and allows users to select multiple options.
+ *
+ * @param {string} id - The HTML id of the dropdown element.
+ * @param {string} label - The label of the dropdown.
+ * @param {Option[]} options - The options of the dropdown.
+ * @param {string[]} selectedValues - The currently selected values of the dropdown.
+ * @param {function} onChange - The function to call when the value of the dropdown changes.
+ * @param {boolean} showLabel - Whether to show the label.
+ * @param {number} maxVisibleChips - The maximum number of selected options to display.
+ *
+ * @returns JSX.Element - The rendered dropdown component.
+ */
 const MultiSelectDropdown: React.FC<MultiSelectProps> = ({
     id,
     label,
@@ -33,6 +47,14 @@ const MultiSelectDropdown: React.FC<MultiSelectProps> = ({
     }, [selectedValues]);
 
     useEffect(() => {
+        /**
+         * A function to handle clicks outside of the dropdown element.
+         * The function is used as an event listener for the document's
+         * mousedown event. When a click occurs outside of the dropdown
+         * element, the function sets the isDropdownOpen state to false.
+         *
+         * @param {MouseEvent} event - The event object for the mousedown event.
+         */
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsDropdownOpen(false);
@@ -42,6 +64,15 @@ const MultiSelectDropdown: React.FC<MultiSelectProps> = ({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    /**
+     * Adds a selected option to the list of selected options and updates the state.
+     *
+     * Checks if the given value is not already in the list of selected options.
+     * If it's not present, adds the value to the list, updates the selectedOptions
+     * state, and calls the onChange callback with the updated list.
+     *
+     * @param {string} value - The value of the option to select.
+     */
     const handleSelect = (value: string) => {
         if (!selectedOptions.includes(value)) {
             const updatedOptions = [...selectedOptions, value];
@@ -50,6 +81,14 @@ const MultiSelectDropdown: React.FC<MultiSelectProps> = ({
         }
     };
 
+    /**
+     * Removes a selected option from the list of selected options and updates the state.
+     *
+     * Filters the list of selected options to exclude the given value, updates the
+     * selectedOptions state, and calls the onChange callback with the updated list.
+     *
+     * @param {string} value - The value of the option to remove.
+     */
     const removeChip = (value: string) => {
         const updatedOptions = selectedOptions.filter((option) => option !== value);
         setSelectedOptions(updatedOptions);
@@ -96,7 +135,7 @@ const MultiSelectDropdown: React.FC<MultiSelectProps> = ({
                         {selectedOptions.length > maxVisibleChips && (
                             <div className="relative group">
                                 <div className="px-2 py-0.5 text-black rounded-full text-sm">
-                  +{selectedOptions.length - maxVisibleChips} more
+                                    +{selectedOptions.length - maxVisibleChips} more
                                 </div>
                                 {/* Tooltip showing all selected options */}
                                 <div className="absolute left-0 top-8 hidden group-hover:block bg-gray-700 text-white text-sm rounded-md p-2 shadow-lg">

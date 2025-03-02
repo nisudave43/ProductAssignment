@@ -1,5 +1,5 @@
 // React
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 // Constants
 import { DEFAULT_ROUTE } from '@/constants/configuration';
@@ -24,6 +24,12 @@ interface BreadCrumbProps {
     data: BreadCrumbItem[];
 }
 
+/**
+ * The Breadcrumb component displays a list of links that represent the current position in a hierarchical navigation structure.
+ * The component uses an ordered list to render the links in the correct order.
+ * The links are rendered as a combination of a chevron icon and the title of the link.
+ * The last link in the list is rendered as a span element with the title of the link, to indicate the current position.
+*/
 const BreadCrumb: React.FC<BreadCrumbProps> = ({ data }) => {
     return (
         <nav className="flex" aria-label="Breadcrumb">

@@ -6,9 +6,27 @@ interface AccordionItemProps {
   children: React.ReactNode;
 }
 
+/**
+ * A single accordion item.
+ *
+ * @prop {string} id - The HTML id of the accordion item.
+ * @prop {string} title - The title of the accordion item.
+ * @prop {React.ReactNode} children - The content of the accordion item.
+ *
+ * @example
+ * <AccordionItem id="accordion-item-1" title="Item 1">
+ *   <p>This is the content of the accordion item.</p>
+ * </AccordionItem>
+ */
 const AccordionItem: React.FC<AccordionItemProps> = ({ id, title, children }) => {
     const [isOpen, setIsOpen] = useState(false);
 
+    /**
+     * Toggle the accordion item.
+     *
+     * @function
+     *
+     */
     const toggleAccordion = () => {
         setIsOpen(prevState => !prevState);
     };
@@ -18,7 +36,7 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ id, title, children }) =>
             <h2 id={`${id}-heading`}>
                 <button
                     type="button"
-                    className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
+                    className="flex cursor-pointer items-center justify-between w-full p-5 font-medium text-gray-500 border border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3"
                     aria-expanded={isOpen}
                     aria-controls={`${id}-body`}
                     onClick={toggleAccordion}

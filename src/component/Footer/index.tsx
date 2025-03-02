@@ -1,5 +1,13 @@
 import React from 'react';
 
+/**
+ * A simple footer component.
+ *
+ * It displays a copyright notice and links to the privacy policy and terms of
+ * service.
+ *
+ * @returns The footer component.
+ */
 const Footer: React.FC = () => {
     return (
         <footer className="bg-gray-800 text-white py-6">

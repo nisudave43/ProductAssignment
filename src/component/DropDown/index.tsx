@@ -10,6 +10,34 @@ interface DropdownProps {
   error?: string;
 }
 
+/**
+ * A dropdown component that is a wrapper around the native select element.
+ * @example
+ * import { Dropdown } from '@/component/Dropdown';
+ *
+ * const options = [
+ *     { value: '1', label: 'Option 1' },
+ *     { value: '2', label: 'Option 2' },
+ * ];
+ *
+ * <Dropdown
+ *     id="my-dropdown"
+ *     name="my-dropdown"
+ *     label="Select an option"
+ *     value="1"
+ *     onChange={(event) => console.log(event.target.value)}
+ *     options={options}
+ * />
+ *
+ * @param {string} id - The HTML id of the dropdown element.
+ * @param {string} name - The HTML name of the dropdown element.
+ * @param {string} label - The label of the dropdown.
+ * @param {string} value - The currently selected value of the dropdown.
+ * @param {(event: React.ChangeEvent<HTMLSelectElement>) => void} onChange - The function to call when the value of the dropdown changes.
+ * @param {{ value: string; label: string }[]} options - The options of the dropdown.
+ * @param {string} [error] - An error message to display below the dropdown.
+ * @returns {React.ReactElement} - The rendered dropdown component.
+ */
 const Dropdown: React.FC<DropdownProps> = ({
     id,
     name,
