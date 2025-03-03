@@ -98,7 +98,7 @@ const fetchAllProducts = () => ({
     refetchInterval : false,
 });
 
-    /**
+/**
      * getServerSideProps
      *
      * This function is used to pre-render the dashboard page on the server.
@@ -268,7 +268,7 @@ const DashBoard = (props: any) => {
     /**
      * Transforms an array of product data into a specific format for table rows.
      *
-     * Each product item in the array is mapped to an object with specific fields 
+     * Each product item in the array is mapped to an object with specific fields
      * such as id, title, brand, availabilityStatus, category, price, and rest.
      * If certain fields are missing in the product item, default values ('-') are used.
      *
@@ -440,7 +440,7 @@ const DashBoard = (props: any) => {
      *
      * @returns {any[]} - The sorted array of products.
      */
-	const sortProducts = (data: any, sortField: string, sort: string) => {
+    const sortProducts = (data: any, sortField: string, sort: string) => {
         return data?.sort((a:any, b: any) => {
             if (a[sortField] < b[sortField]) return sort === 'asc' ? -1 : 1;
             if (a[sortField] > b[sortField]) return sort === 'asc' ? 1 : -1;
@@ -477,11 +477,11 @@ const DashBoard = (props: any) => {
         const { search, page = 1, limit = 10, category, sort } = filter || {};
         const sortedProducts = sortProducts(products.products, sort?.sortField, sort?.sort);
 
-        const filteredProducts = sortedProducts.filter((product: any) => 
+        const filteredProducts = sortedProducts.filter((product: any) =>
             !selectedRow.includes(product?.id) &&
             applyQuickFilter([product], quickFilterValue).length &&
             applySearchFilter([product], search).length &&
-            (!category?.length || category.includes(product.category))
+            (!category?.length || category.includes(product.category)),
         );
 
         return {
@@ -593,7 +593,7 @@ const DashBoard = (props: any) => {
      *
      * This function:
      * 1. **Validates input:** Ensures `updatedProduct` and its `id` are provided.
-     * 2. **Updates the product list:** Maps over existing products, replacing the product with the matching `id` 
+     * 2. **Updates the product list:** Maps over existing products, replacing the product with the matching `id`
      *    with `updatedProduct`.
      * 3. **Updates component state:** Sets the updated products list in the component state.
      * 4. **Displays success notification:** Shows a toast message indicating successful update.
@@ -643,7 +643,7 @@ const DashBoard = (props: any) => {
 		  value: item.slug,
 		  label: item.name,
         }));
-	}
+    }
 
     return (
         <div>
@@ -755,7 +755,7 @@ const DashBoard = (props: any) => {
 				    }}
 				    onConfirm={() => {
 				        setSelectedRows(tempSelectedRow);
-                        setMultipleDeleteDialogShow(false);
+				        setMultipleDeleteDialogShow(false);
 				    }}
 				    title="Delete Product"
 				    message="Are you sure you want to delete these products?"

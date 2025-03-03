@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Add Icon
 const Add = () => {
     return (

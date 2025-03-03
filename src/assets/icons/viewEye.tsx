@@ -1,3 +1,5 @@
+import React from 'react';
+
 // View Icon
 const viewEye = () => {
     return (

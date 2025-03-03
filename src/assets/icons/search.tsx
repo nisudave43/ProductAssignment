@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Search Icon
 const Search = () => {
     return (

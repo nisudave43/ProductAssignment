@@ -33,7 +33,7 @@ import type { AppProps } from 'next/app';
 //Styles
 import '@/styles/globals.css';
 
-    /**
+/**
      * The main application component.
      *
      * This component wraps the entire application and provides the context for

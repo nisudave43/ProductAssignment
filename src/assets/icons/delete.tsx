@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Delete Icon
 const Delete = () => {
     return (
